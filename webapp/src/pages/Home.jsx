@@ -4,7 +4,7 @@ import { navKeys } from "../utils/navkeys";
 import Layout from "../components/Layout";
 import AdminTable from "../components/users/admin/AdminTable";
 import CsrList from "../components/users/csr/CsrList";
-import VenderList from "../components/users/vendor/venderList";
+import VenderList from "../components/users/vendor/VenderList";
 import Products from "../components/products/products";
 import Comments from "../components/comments/comments";
 import CustomerList from "../components/customer/CustomerList";
@@ -48,6 +48,13 @@ export default function Home() {
         </>
       );
     }
+    if (selectedKey === "users" && selectedSubKey === "vendors") {
+      return (
+        <>
+          <VenderList />
+        </>
+      );
+    }
     if (selectedKey === "orders" && !selectedSubKey) {
       return (
         <>
@@ -59,14 +66,6 @@ export default function Home() {
       return <>
       <Products />
       </>;
-    }
-
-    if (selectedKey === "venders" && !selectedSubKey) {
-      return (
-        <>
-          <VenderList />
-        </>
-      );
     }
     if (selectedKey === "inventory" && !selectedSubKey) {
       return <></>;
@@ -88,7 +87,7 @@ export default function Home() {
       );
     }
 
-    if (selectedKey === "venders" && !selectedSubKey) {
+    if (selectedKey === "vendors" && !selectedSubKey) {
       return (
         <>
           <VenderList />

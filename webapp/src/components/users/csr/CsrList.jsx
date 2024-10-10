@@ -6,8 +6,6 @@ import UserModel from "../UserModel";
 export default function CsrList() {
   const [csrData, setCsrData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(null);
   const [showModal, setShowModal] = useState(false);
 
   // Get the token from the Redux store
@@ -19,51 +17,49 @@ export default function CsrList() {
         getAllUsers(token , "csr")
           .then((response) => {
             console.log("API Response:", response.data); // Log the API response
-            setCsrData(response); // Store the array of admin objects in state
+            setCsrData(response); // Store the array of csr objects in state
             setLoading(false); 
-            //console.log("Admin Data:", adminData);
+            //console.log("csr Data:", csrData);
           })
           .catch((error) => {
             console.error(
-              "Error fetching admin profiles:",
+              "Error fetching csr profiles:",
               error.response || error
             ); // Log the error
-            setError("Failed to fetch admin profiles");
+            alert("Error fetching csr profiles: " + (error.response?.data?.message || "An error occurred while fetching csr profiles"));
             setLoading(false);
           });
       } else {
         console.error("No token found. Please log in.");
-        setError("No token found. Please log in.");
+        alert("No token found. Please log in.");
         setLoading(false);
       }
     } catch (error) {
-      alert("Error fetching admin profiles");
-      console.error("Error fetching admin profiles:", error);
-      setError("Failed to fetch admin profiles");
+      alert("Error fetching csr profiles");
+      console.error("Error fetching csr profiles:", error);
+      alert("Error fetching csr profiles: " + (error.response?.data?.message || "An error occurred while fetching csr profiles"));
       setLoading(false);
     }
   }, [token]);
 
   const handleAddCsr = async (newCsr) => {
     if (!token) {
-      setError("No token found. Please log in.");
+      alert("No token found. Please log in.");
       return;
     }
     try {
-      setError(null);
-      setSuccess(null);
       const response = await createCsr(newCsr.username, newCsr.password, newCsr.email, token);
 
       if (response.newCsr) {
-        setSuccess("Admin added successfully!"); 
+        alert("New CSR added successfully");
         setCsrData((prevData) => [...prevData, response.newCsr]);
       } else {
-        console.error("Failed to add admin: No new admin in response");
-        setError("Failed to add admin: Unexpected API response");
+        alert("An unexpected error occurred while adding the CSR");
+        console.error("Error adding CSR: "  + response || "An unexpected error occurred while adding the CSR");
       }
     } catch (error) {
       console.error("Error adding admin:", error);
-      setError("Error adding admin: " + (error.response?.data?.message || error.message)); 
+      alert("An unexpected error occurred while adding the CSR");
     }
   };
 
@@ -73,11 +69,6 @@ export default function CsrList() {
   // Render loading message while data is being fetched
   if (loading) {
     return <p>Loading...</p>;
-  }
-
-  // Render error message if fetching failed
-  if (error) {
-    return <p>{error}</p>;
   }
 
   // Render the table with admin profiles
@@ -105,9 +96,9 @@ export default function CsrList() {
           <tbody>
             {csrData?.length > 0 ? (
               csrData.map((csr) => (
-                <tr key={csr.id}>
-                  <td>{csr.username}</td>
-                  <td>{csr.email}</td>
+                <tr key={csr?.id}>
+                  <td>{csr?.username}</td>
+                  <td>{csr?.email}</td>
                   <td><button  className="btn btn-primary btn-sm">Details</button></td>
                 </tr>
               ))
@@ -121,6 +112,7 @@ export default function CsrList() {
       </div>
       <UserModel
         show={showModal}
+        title="Add New CSR"
         handleClose={handleCloseModal}
         handleAddUser={handleAddCsr}
       />

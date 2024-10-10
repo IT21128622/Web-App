@@ -6,8 +6,6 @@ import UserModel from "../UserModel";
 export default function VenderList() {
   const [vendorData, setVendorData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(null);
   const [showModal, setShowModal] = useState(false);
 
   // Get the token from the Redux store
@@ -21,57 +19,63 @@ export default function VenderList() {
             console.log("API Response:", response.data); // Log the API response
             setVendorData(response); // Store the array of admin objects in state
             setLoading(false);
-            //console.log("Admin Data:", adminData);
           })
           .catch((error) => {
             console.error(
-              "Error fetching admin profiles:",
+              "Error fetching vendor profiles:",
               error.response || error
             ); // Log the error
-            setError("Failed to fetch admin profiles");
+            alert(
+              "Error fetching vendor profiles: " +
+                (error.response?.data?.message ||
+                  "An error occurred while fetching vendor profiles")
+            );
             setLoading(false);
           });
       } else {
         console.error("No token found. Please log in.");
-        setError("No token found. Please log in.");
+        alert("No token found. Please log in.");
         setLoading(false);
       }
     } catch (error) {
-      alert("Error fetching admin profiles");
-      console.error("Error fetching admin profiles:", error);
-      setError("Failed to fetch admin profiles");
+      alert("Error fetching vendor profiles");
+      console.error("Error fetching vendor profiles:", error);
+      alert(
+        "Error fetching vendor profiles: " +
+          (error.response?.data?.message ||
+            "An error occurred while fetching vendor profiles")
+      );
       setLoading(false);
     }
   }, [token]);
 
-  const handleAddVendor = async (newCsr) => {
+  const handleAddVendor = async (newVendor) => {
     if (!token) {
-      setError("No token found. Please log in.");
+      alert("No token found. Please log in.");
       return;
     }
     try {
-      setError(null);
-      setSuccess(null);
       const response = await createVender(
-        newCsr.username,
-        newCsr.password,
-        newCsr.email,
+        newVendor.username,
+        newVendor.password,
+        newVendor.email,
         token
       );
 
-      if (response.newCsr) {
-        setSuccess("Admin added successfully!");
-        setVendorData((prevData) => [...prevData, response.newCsr]);
+      if (response) {
+        setVendorData((prevData) => [...prevData, response.newVendor]);
+        alert("New Vendor added successfully");
+        window.location.reload();
       } else {
-        console.error("Failed to add admin: No new admin in response");
-        setError("Failed to add admin: Unexpected API response");
+        console.error("Failed to add vendor: No new vendor in response");
+        alert(
+          "An unexpected error occurred while adding the Vendor " + response ||
+            "An unexpected error occurred while adding the Vendor"
+        );
       }
     } catch (error) {
-      console.error("Error adding admin:", error);
-      setError(
-        "Error adding admin: " +
-          (error.response?.data?.message || error.message)
-      );
+      console.error("Error adding vendor:", error);
+      alert("An unexpected error occurred while adding the Vendor");
     }
   };
 
@@ -80,11 +84,6 @@ export default function VenderList() {
   // Render loading message while data is being fetched
   if (loading) {
     return <p>Loading...</p>;
-  }
-
-  // Render error message if fetching failed
-  if (error) {
-    return <p>{error}</p>;
   }
 
   // Render the table with admin profiles
@@ -116,10 +115,10 @@ export default function VenderList() {
           </thead>
           <tbody>
             {vendorData?.length > 0 ? (
-              vendorData.map((vendor) => (
-                <tr key={vendor.id}>
-                  <td>{vendor.username}</td>
-                  <td>{vendor.email}</td>
+              vendorData?.map((vendor) => (
+                <tr key={vendor?.id}>
+                  <td>{vendor?.username}</td>
+                  <td>{vendor?.email}</td>
                   <td>
                     <button className="btn btn-primary btn-sm">Details</button>
                   </td>
@@ -135,6 +134,7 @@ export default function VenderList() {
       </div>
       <UserModel
         show={showModal}
+        title="Add New Vendor"
         handleClose={handleCloseModal}
         handleAddUser={handleAddVendor}
       />
