@@ -11,7 +11,8 @@ export const navKeys = [
     icon: 'FaUsers',
     subPages: [
       { key: 'admins', name: 'Admins' },
-      { key: 'csr', name: 'CSR' }
+      { key: 'csr', name: 'CSR' },
+      { key: 'vendors', name: 'Vendors' }
     ]
   },
   {
@@ -25,12 +26,6 @@ export const navKeys = [
     name: 'Inventory',
     icon: 'FaBoxes',
     subPages: [] // No subpages, inventory main page
-  },
-  {
-    key: 'venders',
-    name: 'Vendors',
-    icon: 'FaIndustry',
-    subPages: []
   },
   {
     key: 'customers',

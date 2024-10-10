@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import { useState } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
-export default function UserModel({ show, handleClose, handleAddUser }) {
+export default function UserModel({ show,title, handleClose, handleAddUser }) {
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -27,8 +27,14 @@ export default function UserModel({ show, handleClose, handleAddUser }) {
 
   return (
     <Modal show={show} onHide={handleClose}>
-      <Modal.Header closeButton>
-        <Modal.Title>Add New Admin</Modal.Title>
+      <Modal.Header>
+        <Modal.Title>{title}</Modal.Title>
+        <button
+          type="button"
+          className="btn-close bg-danger"
+          aria-label="Close"
+          onClick={handleClose}
+        ></button>
       </Modal.Header>
       <Modal.Body>
         <Form onSubmit={handleSubmit}>
@@ -75,7 +81,7 @@ export default function UserModel({ show, handleClose, handleAddUser }) {
             />
           </Form.Group>
 
-          <Button variant="primary" type="submit" className="mt-3">
+          <Button variant="primary" type="submit" className="mt-3 w-100">
             Submit
           </Button>
         </Form>
