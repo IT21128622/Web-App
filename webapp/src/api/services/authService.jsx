@@ -122,9 +122,9 @@ export const getUnapprovedCus = async (token) => {
   }
 };
 
-export const getUserById = async (id, token) => {
+export const getUserById = async (id, token, user) => {
   try {
-    const response = await apiClient.get(`api/user/admin/${id}`, {
+    const response = await apiClient.get(`api/user/${user}/${id}`, {
       headers: {
         Authorization: `${token}`,
       },

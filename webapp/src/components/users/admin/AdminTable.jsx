@@ -1,22 +1,32 @@
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { getAllUsers, createUser } from "../../../api/services/authService";
-import UserModel from "../UserModel";
+import UserModel from "../modal/userModel";
+import UserDetailModel from "../modal/userDetailModel";
 
 export default function AdminTable() {
   const [adminData, setAdminData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [showModal, setShowModal] = useState(false);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [showDetailModal, setShowDetailModal] = useState(false);
+  const [id, setId] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
 
   // Get the token from the Redux store
   const token = useSelector((state) => state.auth.loggedUser.token);
+  const handleCloseModal = () => setShowAddModal(false);
+  const handleShowModal = () => setShowAddModal(true);
+  const handleShowDetailModal = () => setShowDetailModal(true);
+  const handleCloseDetailModal = () => {
+    setShowDetailModal(false);
+  };
 
   useEffect(() => {
     try {
       if (token) {
         getAllUsers(token, "admin")
           .then((response) => {
-            console.log("API Response:", response.data); // Log the API response
+            console.log("API Response:", response); // Log the API response
             setAdminData(response); // Store the array of admin objects in state
             setLoading(false);
             console.log("Admin Data:", adminData);
@@ -67,11 +77,14 @@ export default function AdminTable() {
       if (response) {
         alert("Admin added successfully");
         window.location.reload();
-        setAdminData((prevData) => [...prevData, response.newAdmin]);;
+        setAdminData((prevData) => [...prevData, response.newAdmin]);
       } else {
         console.error("Failed to add admin: No new admin in response");
         setAdminData((prevData) => [...prevData, response.newAdmin]);
-        alert("Failed to add admin  an unexpected error occurred " + response || "An unexpected error occurred while adding the admin");
+        alert(
+          "Failed to add admin  an unexpected error occurred " + response ||
+            "An unexpected error occurred while adding the admin"
+        );
       }
     } catch (error) {
       console.error("Error adding admin:", error);
@@ -83,8 +96,12 @@ export default function AdminTable() {
     }
   };
 
-  const handleCloseModal = () => setShowModal(false);
-  const handleShowModal = () => setShowModal(true);
+  // Search filter
+  const filteredAdmins = adminData.filter(
+    (admin) =>
+      admin.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      admin.email.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   // Render loading message while data is being fetched
   if (loading) {
@@ -108,6 +125,17 @@ export default function AdminTable() {
           Add
         </button>
       </div>
+      <div className="d-flex justify-content-center m-3 w-100">
+        <div className="rounded w-75 p-3">
+          <input
+            type="text"
+            className="form-control"
+            placeholder="Search by username or email"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+      </div>
 
       <div className="table-wrapper">
         <table className="table custom-table">
@@ -119,13 +147,21 @@ export default function AdminTable() {
             </tr>
           </thead>
           <tbody>
-            {adminData?.length > 0 ? (
-              adminData?.map((admin) => (
+            {filteredAdmins?.length > 0 ? (
+              filteredAdmins?.map((admin) => (
                 <tr key={admin?.id}>
                   <td>{admin?.username}</td>
                   <td>{admin?.email}</td>
                   <td>
-                    <button className="btn btn-primary btn-sm">Details</button>
+                    <button
+                      className="btn btn-primary btn-sm"
+                      onClick={() => {
+                        setId(admin.id);
+                        handleShowDetailModal();
+                      }}
+                    >
+                      Details
+                    </button>
                   </td>
                 </tr>
               ))
@@ -138,10 +174,16 @@ export default function AdminTable() {
         </table>
       </div>
       <UserModel
-        show={showModal}
+        show={showAddModal}
         title="Add New Admin"
         handleClose={handleCloseModal}
         handleAddUser={handleAddAdmin}
+      />
+      <UserDetailModel
+        show={showDetailModal}
+        id={id}
+        title="Admin Details"
+        handleClose={handleCloseDetailModal}
       />
     </div>
   );

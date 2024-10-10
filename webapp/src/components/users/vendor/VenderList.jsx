@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { createVender, getAllUsers } from "../../../api/services/authService";
-import UserModel from "../UserModel";
+import UserModel from "../modal/userModel";
 
 export default function VenderList() {
   const [vendorData, setVendorData] = useState([]);

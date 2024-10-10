@@ -41,8 +41,6 @@ export default function OrderList() {
       if (response) {
         setOrderData(response);
         setLoading(false);
-        alert("Order List fetched successfully");
-        console.log("Order List:", orderData);
       } else {
         setLoading(false);
         alert("Invalid response from server");

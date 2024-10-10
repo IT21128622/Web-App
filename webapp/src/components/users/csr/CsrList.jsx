@@ -1,7 +1,7 @@
 import  { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { createCsr, getAllUsers } from "../../../api/services/authService";
-import UserModel from "../UserModel";
+import UserModel from "../modal/userModel";
 
 export default function CsrList() {
   const [csrData, setCsrData] = useState([]);
