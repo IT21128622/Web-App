@@ -45,6 +45,21 @@ export const getProductByID = async (productId, token) => {
   }
 };
 
+export const getAllLowStockProducts = async (token) => {
+  try {
+    const response = await apiClient.get(`/api/inventory/lowstockproducts-all`, {
+      headers: {
+        Authorization: `${token}`,
+      },
+    });
+    console.log(response)
+    return response.data;
+  } catch (error) {
+    console.log(error)
+    return error.response.data
+  }
+}
+
 
 export const updateProductByID = async (productId, product, token) => {
   try {
@@ -95,6 +110,24 @@ export const createProduct = async (productName, price, category, description, i
     );
     console.log(response)
     return response.data;
+  } catch (error) {
+    console.log(error);
+    return error.response.data;
+  }
+}
+
+export const changeCategoryStatus = async (status, category, token) => {
+  try {
+    const response = await apiClient.patch(`/api/Product/status/${category}`,
+      status,
+      {
+        headers: {
+          Authorization: `${token}`,
+        },
+      }
+    );
+    console.log(response)
+    return response;
   } catch (error) {
     console.log(error);
     return error.response.data;

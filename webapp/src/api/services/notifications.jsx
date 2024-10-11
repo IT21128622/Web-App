@@ -15,3 +15,19 @@ export const getNotificationsBasedOnVendor = async (token) => {
     return error.response.data;
   }
 };
+
+export const pushNotificationsToVendor = async (token, productId) => {
+  try {
+    const response = await apiClient.post(`/api/Inventory/notifyVendor/${productId}`,
+      null, {
+      headers: {
+        Authorization: `${token}`,
+      },
+    });
+    console.log(response)
+    return response;
+  } catch (error) {
+    console.log(error);
+    return error.response;
+  }
+}

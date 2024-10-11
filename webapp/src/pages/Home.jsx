@@ -9,6 +9,7 @@ import Products from "../components/products/products";
 import Comments from "../components/comments/comments";
 import CustomerList from "../components/customer/CustomerList";
 import OrderList from "../components/orders/OrderList";
+import Inventory from "../components/inventory/inventory";
 
 export default function Home() {
   const [selectedKey, setSelectedKey] = React.useState(navKeys[0].key);
@@ -30,7 +31,7 @@ export default function Home() {
     if (selectedKey === "dashboard" && !selectedSubKey) {
       return (
         <>
-          
+
         </>
       );
     }
@@ -64,11 +65,13 @@ export default function Home() {
     }
     if (selectedKey === "products" && !selectedSubKey) {
       return <>
-      <Products />
+        <Products />
       </>;
     }
-    if (selectedKey === "inventory" && !selectedSubKey) {
-      return <></>;
+    if (selectedKey === "inventory" && selectedSubKey === "admins") {
+      return <>
+        <Inventory />
+      </>;
     }
 
     if (selectedKey === "comments" && !selectedSubKey) {
