@@ -4,7 +4,6 @@ import storage from "redux-persist/lib/storage";
 import authSlice from "./auth/authSlice";
 import orderSlice from "./order/orderSlice";
 
-
 const persistConfig = {
   key: "root",
   storage,

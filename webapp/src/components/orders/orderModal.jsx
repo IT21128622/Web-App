@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import { getProductByID } from "../../api/services/productService";
 
 export default function ViewOrderModal({ show, handleClose }) {
-  const token = useSelector((state) => state.auth.loggedUser.token);
+  // const token = useSelector((state) => state.auth.loggedUser.token);
   const order = useSelector((state) => state.order);
 
   // Add this to store product details
@@ -16,7 +16,7 @@ export default function ViewOrderModal({ show, handleClose }) {
     const fetchProducts = async () => {
       const fetchedProducts = {};
       for (const productId of Object.keys(order.products)) {
-        const productDetails = await getProductByID(token ,productId);
+        const productDetails = await getProductByID(productId);
         fetchedProducts[productId] = productDetails;
       }
       setProducts(fetchedProducts);
@@ -180,12 +180,15 @@ export default function ViewOrderModal({ show, handleClose }) {
               <Form.Label className="m-2">Cancelled on:</Form.Label>
               <Form.Text>{order.cancelledOn}</Form.Text>
             </Form.Group>
-            {/* <Form.Group className="m-3">
+            <Form.Group className="m-3">
               <Form.Label className="m-2">Cancelled by:</Form.Label>
               <Form.Text>{order.cancelledBy}</Form.Text>
-            </Form.Group> */}
+            </Form.Group>
           </div>
         )}
+
+    {/* {order?.cancelled == true && ( */}
+        
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={handleClose}>

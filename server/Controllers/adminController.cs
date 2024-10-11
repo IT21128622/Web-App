@@ -5,6 +5,7 @@ using server.Models;
 using server.DTOs;
 using Microsoft.Extensions.Options;
 using System.Security.Claims;
+using SendGrid;
 
 
 namespace MongoExample.Controllers;
@@ -70,6 +71,9 @@ public class AdminController : ControllerBase
       };
 
       await _mongoDBService.CreateAdminAsync(newAdmin);
+
+      //After ad
+
       return CreatedAtAction(nameof(Get), new { id = newAdmin.Id }, newAdmin);
     }
     catch (Exception ex)
@@ -206,7 +210,7 @@ public class AdminController : ControllerBase
 
       //Find the admin by id and update the admin List
       adminList.AdminsCreated.Add(newAdmin);
-      await _mongoDBService.UpdateAdminAsync(adminList.Id, adminList);
+      await _mongoDBService.UpdateCreateAdminAsync(adminList.Id, adminList);
 
       //Send email to Admin with the password and email
       await _emailService.SendEmailAsync(
@@ -325,7 +329,7 @@ $"Your Email is {admin.Email}\nPassword: {admin.Password}\nPlease change your pa
       await _emailService.SendEmailAsync(newCSR.Email, "Welcome to the team", $"Your Email is ${csr.Email} and password: {csr.Password}");
       //Find the admin by id and update the admin List
       adminList.CSRCreated.Add(newCSR);
-      await _mongoDBService.UpdateAdminAsync(adminList.Id, adminList);
+      await _mongoDBService.UpdateCreateAdminAsync(adminList.Id, adminList);
 
       return CreatedAtAction(nameof(Get), new { id = newCSR.Id }, responseCSR);
     }
@@ -416,7 +420,7 @@ $"Your Email is {admin.Email}\nPassword: {admin.Password}\nPlease change your pa
 
       //Find the admin by id and update the admin List
       adminList.VendorCreated.Add(newVendor);
-      await _mongoDBService.UpdateAdminAsync(adminList.Id, adminList);
+      await _mongoDBService.UpdateCreateAdminAsync(adminList.Id, adminList);
 
       return CreatedAtAction(nameof(Get), new { id = newVendor.Id }, resVendor);
     }

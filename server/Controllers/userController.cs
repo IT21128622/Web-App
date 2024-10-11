@@ -68,6 +68,7 @@ namespace MongoExample.Controllers
                 }
                 else if (login.Role.ToLower() == "vendor")
                 {
+                    Console.WriteLine("Vendor");    
                     existingUser = await _mongoDBService.GetVendorByEmailAsync(login.Email);
                 }
                 else if (login.Role.ToLower() == "customer")
@@ -506,10 +507,10 @@ namespace MongoExample.Controllers
                 {
                     return Conflict("The customer is already approved.");
                 }
-
+                Console.WriteLine("existingUser: " + existingAuthenticator);
                 // Update the customer approval status
                 existingUser.ApprovalStatus = true;
-                existingUser.ApprovedBy = id;
+                existingUser.ApprovedBy = existingAuthenticator.Id;
 
                 // Save the updated user details 
                 await _mongoDBService.UpdateCustomer(id, existingUser);

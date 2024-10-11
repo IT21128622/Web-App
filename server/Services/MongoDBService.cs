@@ -48,6 +48,18 @@ namespace server.Services
       }
     }
 
+
+    // Update the delivery status of a specific product in an order
+ public async Task<bool> UpdateProductDeliveryStatusAsync(string orderId, string productId, ProductDeliveryStatus newStatus)
+{
+    var filter = Builders<Order>.Filter.Eq(o => o.Id, orderId) & Builders<Order>.Filter.Eq($"products.{productId}", productId);
+    var update = Builders<Order>.Update.Set($"products.{productId}.deliveryStatus", newStatus);
+
+    var result = await _orderCollection.UpdateOneAsync(filter, update);
+    return result.ModifiedCount > 0;
+}
+
+
     // Product methods
     public async Task<List<Product>> GetProductsAsync()
     {
@@ -220,9 +232,24 @@ namespace server.Services
     public async Task<Admin?> GetAdminByEmailAsync(string email) =>
         await _adminCollection.Find(x => x.Email == email).FirstOrDefaultAsync();
 
+    // Update admin by ID
+    public async Task UpdateCreateAdminAsync(string adminId, Admin updatedAdmin)
+    {
+      var filter = Builders<Admin>.Filter.Eq(a => a.Id, adminId);
+      var updateResult = await _adminCollection.ReplaceOneAsync(filter, updatedAdmin);
+
+      if (updateResult.MatchedCount == 0)
+      {
+        throw new Exception($"Admin with ID {adminId} not found.");
+      }
+    }
+
+
     // Update admin by ID (username, email, password)
     public async Task UpdateAdminAsync(string adminId, Admin updatedAdmin)
     {
+      Console.WriteLine("Updating admin");
+      Console.WriteLine("adminId " + adminId);
       var filter = Builders<Admin>.Filter.Eq(a => a.Id, adminId);
 
       var update = Builders<Admin>.Update
