@@ -68,6 +68,7 @@ namespace MongoExample.Controllers
                 }
                 else if (login.Role.ToLower() == "vendor")
                 {
+                    Console.WriteLine("Vendor");    
                     existingUser = await _mongoDBService.GetVendorByEmailAsync(login.Email);
                 }
                 else if (login.Role.ToLower() == "customer")
