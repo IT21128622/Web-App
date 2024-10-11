@@ -79,3 +79,29 @@
   .custom-table .icon{
     color: #cccfce;
   }
+
+  .header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+  }
+  
+  .search-container {
+    width: 75%; /* Adjust width as per your layout preference */
+  }
+  
+  .search-input {
+    width: 100%;
+    padding: 8px 12px;
+    font-size: 16px;
+  }
+  
+  .table-wrapper {
+    margin-top: 20px;
+  }
+  
+  .btn-primary {
+    margin-right: 10px;
+  }
+  

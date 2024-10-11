@@ -5,20 +5,20 @@ import { Badge } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { setOrderResponse } from "../../redux/order/orderSlice";
 import ViewOrderModal from "./orderModal";
-
+ 
 export default function OrderList() {
   const [orderData, setOrderData] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState(null);
   const [searchQuery, setSearchQuery] = React.useState("");
   const [showModal, setShowModal] = React.useState(false);
-
+ 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
+ 
   // Get the token from the Redux store
   const token = useSelector((state) => state.auth.loggedUser.token);
-
+ 
   // Enum for order status
   const OrderStatus = {
     0: "Processing",
@@ -27,12 +27,12 @@ export default function OrderList() {
     3: "Delivered",
     4: "Cancelled",
   };
-
+ 
   //handle close modal
   const handleClose = () => {
     setShowModal(false);
   };
-
+ 
   // Function to fetch the list of orders
   const getOrderList = async () => {
     try {
@@ -54,12 +54,12 @@ export default function OrderList() {
       setLoading(Error);
     }
   };
-
+ 
   // Call the getOrderList function when the component loads
   React.useEffect(() => {
     getOrderList();
   }, []);
-
+ 
   // Badge class mapping based on status
   const badgeClass = {
     0: "warning", // Processing
@@ -68,14 +68,14 @@ export default function OrderList() {
     3: "success", // Delivered
     4: "danger", // Cancelled
   };
-
+ 
   // Filter orderData based on search query
   const filteredOrders = orderData.filter((order) => {
     const dateParts = order.orderDate.split(" ")[0].split("-"); // Split date into DD-MM-YYYY
     const day = dateParts[0];
     const month = dateParts[1];
     const year = dateParts[2];
-
+ 
     return (
       order.orderId.includes(searchQuery) || // Search by OrderId
       order.email?.toLowerCase().includes(searchQuery.toLowerCase()) || // Search by Email
@@ -84,7 +84,7 @@ export default function OrderList() {
       year.includes(searchQuery) // Search by year
     );
   });
-
+ 
   return (
     <div className="container">
       <div className="title-bar d-flex p-2">
@@ -101,7 +101,7 @@ export default function OrderList() {
           <i className="bi bi-search"></i>
         </button>
       </div>
-
+ 
       <table className="table custom-table">
         <thead>
           <tr>
@@ -139,7 +139,8 @@ export default function OrderList() {
           )}
         </tbody>
       </table>
-      <ViewOrderModal show={showModal} handleClose={handleClose} />       
+      {/* <ViewOrderModal show={showModal} handleClose={handleClose} />        */}
     </div>
   );
 }
+ 

@@ -3,7 +3,10 @@
     gap: 10px; 
   }
   .chart-container {
-    width: 200px; /* Adjust the width as needed */
-    height: 200px; /* Adjust the height as needed */
-    margin: 0 auto; /* Center the chart */
+    width: 400px; 
+    height: 400px; 
+    margin: 0 auto; 
+    text-align: center;
+    padding-top: 10px;
+   
   }

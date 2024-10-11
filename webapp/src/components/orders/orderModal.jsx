@@ -166,10 +166,16 @@ export default function ViewOrderModal({ show, handleClose }) {
         )}
         {order?.requestToCancel == true && (
           <div className="d-flex p-2  justify-content-center align-items-center">
-            <button className="btn btn-primary btn-sm m-2 rounded" onClick={handleClose}>
+            <button
+              className="btn btn-primary btn-sm m-2 rounded"
+              onClick={handleClose}
+            >
               Approve Cancel Request
             </button>
-            <button className="btn btn-danger btn-sm m-2 rounded" onClick={handleClose}>
+            <button
+              className="btn btn-danger btn-sm m-2 rounded"
+              onClick={handleClose}
+            >
               Reject Cancel Request
             </button>
           </div>
@@ -179,6 +185,29 @@ export default function ViewOrderModal({ show, handleClose }) {
             <Form.Group className="m-3">
               <Form.Label className="m-2">Cancelled on:</Form.Label>
               <Form.Text>{order.cancelledOn}</Form.Text>
+            </Form.Group>
+            <Form.Group className="m-3">
+              <Form.Label className="m-2">Cancelled by:</Form.Label>
+              <Form.Text>{order.cancelledBy}</Form.Text>
+            </Form.Group>
+          </div>
+        )}
+
+        {order?.cancelled == false && (
+          <div className="d-flex p-2  justify-content-center align-items-center">
+            <Form.Group className="m-3">
+            <button
+          // onClick={handleShowModal}
+          className="btn btn-primary btn-block mt-4"
+          style={{
+            padding: "10px 20px",
+            width: "100px",
+            fontSize: "16px",
+            fontWeight: "bold",
+          }}
+        >
+          Add
+        </button>
             </Form.Group>
             <Form.Group className="m-3">
               <Form.Label className="m-2">Cancelled by:</Form.Label>

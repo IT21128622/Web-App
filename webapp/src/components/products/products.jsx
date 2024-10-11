@@ -2,10 +2,11 @@
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import ProductModel from "./productModal";
-import { getAllProducts, createProduct, deleteProductByID,getAllProductsAdmin } from "../../api/services/productService";
+import { getAllProducts, createProduct, deleteProductByID, getAllProductsAdmin } from "../../api/services/productService";
 import ProductViewModal from "./ViewProduct";
 import ViewProductModal from "./viewProductModel";
-import '../../styles/table.css'; 
+import '../../styles/table.css';
+
 export default function Products() {
   const [productData, setProductData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -14,7 +15,7 @@ export default function Products() {
   const [showModal, setShowModal] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
   const [selectedProductId, setSelectedProductId] = useState(null);
-
+  const [searchTerm, setSearchTerm] = useState("");
   // Get the token from the Redux store
   const token = useSelector((state) => state.auth.loggedUser.token);
   const role = useSelector((state) => state.auth.loggedUser.role);
@@ -22,7 +23,7 @@ export default function Products() {
 
   useEffect(() => {
     try {
-      if(role === "vender"){
+      if (role === "vender") {
         if (token) {
           getAllProducts(token)
             .then((response) => {
@@ -45,7 +46,7 @@ export default function Products() {
           setLoading(false);
         }
       }
-      else if(role === "admin" || role === "csr"){
+      else if (role === "admin" || role === "csr") {
         if (token) {
           getAllProductsAdmin(token)
             .then((response) => {
@@ -53,7 +54,7 @@ export default function Products() {
               setProductData(response); // Store the array of admin objects in state
               setLoading(false);
               console.log("vendor Data:", productData);
-              
+
             })
             .catch((error) => {
               console.error(
@@ -151,21 +152,38 @@ export default function Products() {
   };
   const handleCloseViewModal = () => setShowViewModal(false);
 
+  const filteredProducts = productData.filter(
+    (product) =>
+      product.productName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product.category.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   // Render the table with admin profiles
   return (
 
     <div className="container">
-      <div style={{ paddingBottom: "20px" }}>
-        <button
-          onClick={handleShowModal}
-          className="btn btn-primary btn-block mt-4"
-          style={{ padding: "10px 20px", width: "100px", fontSize: "16px", fontWeight: "bold" }}
-        >
-          Add
-        </button>
+      <div className="header-container d-flex justify-content-between align-items-center">
+        <div>
+          <button
+            onClick={handleShowModal}
+            className="btn btn-primary btn-block"
+            style={{ padding: "5px 10px", width: "100px", fontSize: "16px", fontWeight: "bold" }}
+          >
+            Add
+          </button>
+        </div>
+        <div className="search-container">
+          <input
+            type="text"
+            className="form-control search-input"
+            placeholder="Search by name or category"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
       </div>
 
-      <div className="table-wrapper" >
+      <div className="table-wrapper">
         <table className="table custom-table">
           <thead>
             <tr>
@@ -178,44 +196,43 @@ export default function Products() {
             </tr>
           </thead>
           <tbody>
-            {productData?.length > 0 ? (
-              productData.map((product) => (
+            {filteredProducts?.length > 0 ? (
+              filteredProducts.map((product) => (
                 <tr key={product.id}>
                   <td>{product.productName}</td>
                   <td>{product.price}</td>
                   <td>{product.category}</td>
                   <td>{product.isCategoryActive ? "Active" : "Deactive"}</td>
                   <td>{product.isActive ? "Active" : "Deactive"}</td>
-                  <td><button className="btn btn-primary btn-sm" onClick={() => handleViewProduct(product.id)}>View</button>
-                  {role === "vendor" ? <button className="btn btn-danger btn-sm" onClick={() => handleDelete(product.id)}>Delete</button>
-                  :null}</td>
-                    
+                  <td>
+                    <button className="btn btn-primary btn-sm" onClick={() => handleViewProduct(product.id)}>
+                      View
+                    </button>
+                    {role === "vendor" && (
+                      <button className="btn btn-danger btn-sm" onClick={() => handleDelete(product.id)}>
+                        Delete
+                      </button>
+                    )}
+                  </td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan="3">Prodcuts not found</td>
+                <td colSpan="6">Products not found</td>
               </tr>
             )}
           </tbody>
         </table>
       </div>
-      <ProductModel
-        show={showModal}
-        handleClose={handleCloseModal}
-        handleAddUser={handleAddProducts}
-      />
-      {role === "vendor" ?< ProductViewModal
-        show={showViewModal}
-        handleClose={handleCloseViewModal}
-        productId={selectedProductId}
-      /> : <ViewProductModal
-        show={showViewModal}
-        handleClose={handleCloseViewModal}
-        productId={selectedProductId}/>
 
-      }
-      
+      <ProductModel show={showModal} handleClose={handleCloseModal} handleAddUser={handleAddProducts} />
+
+      {role === "vendor" ? (
+        <ProductViewModal show={showViewModal} handleClose={handleCloseViewModal} productId={selectedProductId} />
+      ) : (
+        <ViewProductModal show={showViewModal} handleClose={handleCloseViewModal} productId={selectedProductId} />
+      )}
     </div>
+
   );
 }
