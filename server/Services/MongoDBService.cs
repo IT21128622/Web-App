@@ -50,14 +50,14 @@ namespace server.Services
 
 
     // Update the delivery status of a specific product in an order
- public async Task<bool> UpdateProductDeliveryStatusAsync(string orderId, string productId, ProductDeliveryStatus newStatus)
-{
-    var filter = Builders<Order>.Filter.Eq(o => o.Id, orderId) & Builders<Order>.Filter.Eq($"products.{productId}", productId);
-    var update = Builders<Order>.Update.Set($"products.{productId}.deliveryStatus", newStatus);
+    public async Task<bool> UpdateProductDeliveryStatusAsync(string orderId, string productId, ProductDeliveryStatus newStatus)
+    {
+      var filter = Builders<Order>.Filter.Eq(o => o.Id, orderId) & Builders<Order>.Filter.Eq($"products.{productId}", productId);
+      var update = Builders<Order>.Update.Set($"products.{productId}.deliveryStatus", newStatus);
 
-    var result = await _orderCollection.UpdateOneAsync(filter, update);
-    return result.ModifiedCount > 0;
-}
+      var result = await _orderCollection.UpdateOneAsync(filter, update);
+      return result.ModifiedCount > 0;
+    }
 
 
     // Product methods
