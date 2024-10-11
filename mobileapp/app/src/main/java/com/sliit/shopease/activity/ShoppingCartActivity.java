@@ -20,8 +20,6 @@ import com.sliit.shopease.R;
 import com.sliit.shopease.models.Cart;
 import com.sliit.shopease.models.Product;
 
-import java.util.Map;
-
 public class ShoppingCartActivity extends AppCompatActivity {
   private Cart cart;
 
@@ -68,6 +66,7 @@ public class ShoppingCartActivity extends AppCompatActivity {
       holder.cartItem_txt_name.setText(product.getProductName());
       holder.cardItem_txt_price.setText(product.getPriceString());
       holder.cardItem_txt_count.setText(String.valueOf(cart.getProductCount(product)));
+      holder.cardItem_txt_stock.setText(getString(R.string.slash_val, product.getStockLevel()));
 
       holder.cardItem_btn_add.setOnClickListener(v -> {
         cart.addItem(product);
@@ -90,6 +89,7 @@ public class ShoppingCartActivity extends AppCompatActivity {
       private final TextView cartItem_txt_name;
       private final TextView cardItem_txt_price;
       private final TextView cardItem_txt_count;
+      private final TextView cardItem_txt_stock;
       private final ImageButton cardItem_btn_add;
       private final ImageButton cardItem_btn_subtract;
 
@@ -101,8 +101,8 @@ public class ShoppingCartActivity extends AppCompatActivity {
         cardItem_txt_count = itemView.findViewById(R.id.cardItem_txt_count);
         cardItem_btn_add = itemView.findViewById(R.id.cardItem_btn_add);
         cardItem_btn_subtract = itemView.findViewById(R.id.cardItem_btn_subtract);
+        cardItem_txt_stock = itemView.findViewById(R.id.cardItem_txt_stock);
       }
     }
   }
-
 }

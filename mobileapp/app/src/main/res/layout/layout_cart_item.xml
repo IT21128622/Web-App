@@ -26,29 +26,37 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
+            android:id="@+id/cardItem_txt_price"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/price"
             android:textColor="@color/white"
-            android:id="@+id/cardItem_txt_price"
             android:textSize="16sp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/cartItem_txt_name" />
 
         <TextView
+            android:id="@+id/cardItem_txt_count"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
-            android:layout_marginEnd="15dp"
-            android:id="@+id/cardItem_txt_count"
             android:gravity="center"
             android:text="@string/count"
             android:textColor="@color/black"
             android:textSize="18sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/cardItem_btn_subtract"
+            app:layout_constraintEnd_toStartOf="@id/cardItem_txt_stock"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/cardItem_txt_stock"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="15dp"
+            android:text="@string/in_stock"
+            app:layout_constraintBaseline_toBaselineOf="@id/cardItem_txt_count"
+            app:layout_constraintEnd_toStartOf="@id/cardItem_btn_subtract" />
 
         <ImageButton
             android:id="@+id/cardItem_btn_subtract"
