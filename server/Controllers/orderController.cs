@@ -693,11 +693,11 @@ public async Task<IActionResult> UpdateProductStatus(string orderId, string prod
           return BadRequest("Order already ready.");
         }
 
-        //Check if already dispatched
-        if (order.Status != server.Models.OrderStatus.Dispatched)
-        {
-          return BadRequest("Order not dispatched. Cannot update to ready.");
-        }
+        // //Check if already dispatched
+        // if (order.Status != server.Models.OrderStatus.Dispatched)
+        // {
+        //   return BadRequest("Order not dispatched. Cannot update to ready.");
+        // }
 
         //Check if request to cancel is true
         if (order.RequestToCancel == true)
