@@ -76,7 +76,7 @@ export default function Home() {
         <Products />
       </>;
     }
-    if (selectedKey === "inventory" && selectedSubKey === "admins") {
+    if (selectedKey === "inventory" && !selectedSubKey) {
       return <>
         <Inventory />
       </>;
