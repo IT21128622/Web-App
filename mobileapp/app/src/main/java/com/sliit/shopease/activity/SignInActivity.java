@@ -127,7 +127,6 @@ public class SignInActivity extends AppCompatActivity {
       @Override
       public void onSuccess(String response) {
         System.out.println(response);
-        DialogHelper.hideLoading();
 
         try {
           final JSONObject res = new JSONObject(response);
@@ -137,39 +136,82 @@ public class SignInActivity extends AppCompatActivity {
               userData.getString("id"),
               userData.getString("username"),
               userData.getString("email"),
-              res.getString("token")
+              res.getString("token"),
+              false // update after get User
           );
-
           sharedPreferencesHelper.saveString(PrefKeys.USER, user.toJson());
+
+          getUserStatus();
 
         } catch (Exception e) {
           e.printStackTrace();
           System.out.println(e.getMessage());
           DialogHelper.hideLoading();
           DialogHelper.showAlert(SignInActivity.this, "Error: ", e.getMessage());
-          return;
         }
-
-        goToMain();
       }
 
       @Override
       public void onFailure(ShopEaseError error) {
-        System.out.println(error);
-        DialogHelper.hideLoading();
+        onFailResponse(error);
+      }
+    });
+  }
 
+  private void onFailResponse(ShopEaseError error) {
+    System.out.println(error);
+    DialogHelper.hideLoading();
 
-        String message = error.getMessage();
+    String message = error.getMessage();
 
-        //If error is an exception, not needed to check statusCode
-        if (error.getException() == null) {
-          if (error.getStatus() == 404) {
-            message = "Invalid User Credentials";
+    //If error is an exception, not needed to check statusCode
+    if (error.getException() == null) {
+      if (error.getStatus() == 404) {
+        message = "Invalid User Credentials";
+      }
+    }
+
+    String finalMessage = message;
+    runOnUiThread(() -> DialogHelper.showAlert(SignInActivity.this, "Error: ", finalMessage));
+
+  }
+
+  private void getUserStatus() {
+    final String userJson = sharedPreferencesHelper.getString(PrefKeys.USER, "");
+    User user = User.fromJson(userJson);
+
+    networkHelper.get(SignInActivity.this, ApiEndPoints.USER + user.getId(), true, new NetworkCallback<String>() {
+      @Override
+      public void onSuccess(String response) {
+        try {
+          final JSONObject res = new JSONObject(response);
+          User user = User.fromJson(sharedPreferencesHelper.getString(PrefKeys.USER, ""));
+
+          user = user.copyWith(
+              null,
+              null,
+              null,
+              null,
+              res.getBoolean("approvalStatus") && !res.getBoolean("deactivated")
+          );
+
+          if (user.getIsActive()) {
+            sharedPreferencesHelper.saveString(PrefKeys.USER, user.toJson());
           }
-        }
 
-        String finalMessage = message;
-        runOnUiThread(() -> DialogHelper.showAlert(SignInActivity.this, "Error: ", finalMessage));
+          goToMain();
+          DialogHelper.hideLoading();
+        } catch (Exception e) {
+          e.printStackTrace();
+          System.out.println(e.getMessage());
+          DialogHelper.hideLoading();
+          DialogHelper.showAlert(SignInActivity.this, "Error: ", e.getMessage());
+        }
+      }
+
+      @Override
+      public void onFailure(ShopEaseError error) {
+        onFailResponse(error);
       }
     });
   }

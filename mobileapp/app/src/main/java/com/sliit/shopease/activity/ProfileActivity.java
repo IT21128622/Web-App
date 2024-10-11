@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -18,17 +19,19 @@ import com.sliit.shopease.R;
 import com.sliit.shopease.constants.PrefKeys;
 import com.sliit.shopease.helpers.DialogHelper;
 import com.sliit.shopease.helpers.SharedPreferencesHelper;
+import com.sliit.shopease.models.User;
 
 public class ProfileActivity extends AppCompatActivity {
   SharedPreferencesHelper sharedPreferencesHelper;
   private EditText prof_edt_name;
   private EditText prof_edt_email;
+  private TextView prof_txt_status;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     EdgeToEdge.enable(this);
-    setContentView(R.layout.activity_profile_view);
+    setContentView(R.layout.activity_profile);
     ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
       Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
       v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -36,14 +39,32 @@ public class ProfileActivity extends AppCompatActivity {
     });
 
     Button prof_btn_logout = findViewById(R.id.prof_btn_logout);
+    Button prof_btn_update = findViewById(R.id.prof_btn_update);
+
     prof_edt_email = findViewById(R.id.prof_edt_email);
     prof_edt_name = findViewById(R.id.prof_edt_name);
-    Button prof_btn_update = findViewById(R.id.prof_btn_update);
+    prof_txt_status = findViewById(R.id.prof_txt_status);
 
     prof_btn_logout.setOnClickListener(v -> logout());
     prof_btn_update.setOnClickListener(this::update);
 
     sharedPreferencesHelper = new SharedPreferencesHelper(this);
+
+    setValues();
+  }
+
+  private void setValues() {
+    final String userJson = sharedPreferencesHelper.getString(PrefKeys.USER, "");
+    User user = User.fromJson(userJson);
+    final boolean isActive = user.getIsActive();
+
+    prof_txt_status.setText(isActive ? "Active" : "Deactivated");
+    prof_txt_status.setBackgroundResource(isActive ? R.color.green : R.color.red);
+
+    prof_txt_status.setTextColor(isActive
+        ? getResources().getColor(R.color.black, null)
+        : getResources().getColor(R.color.white, null)
+    );
   }
 
   void logout() {
@@ -66,7 +87,7 @@ public class ProfileActivity extends AppCompatActivity {
     String name = prof_edt_name.getText().toString().trim();
     String email = prof_edt_email.getText().toString().trim();
 
-    if(name.isEmpty() || email.isEmpty()){
+    if (name.isEmpty() || email.isEmpty()) {
       DialogHelper.showAlert(this, "Error", "Please enter both name and email");
       return;
     }

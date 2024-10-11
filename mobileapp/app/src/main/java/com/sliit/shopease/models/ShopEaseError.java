@@ -57,7 +57,7 @@ public class ShopEaseError {
     if(status == 409){
       errorMsg = "User already exists";
     }else if(status == 404){
-      errorMsg = "User not found";
+      errorMsg = "Not found";
     }
     return errorMsg;
   }

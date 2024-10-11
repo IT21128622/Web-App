@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
@@ -65,6 +66,18 @@ public class ShoppingCartActivity extends AppCompatActivity {
       holder.cartItem_txt_name.setText(product.getProductName());
       holder.cardItem_txt_price.setText(product.getPriceString());
       holder.cardItem_txt_count.setText(String.valueOf(data.get(productJson)));
+
+      holder.cardItem_btn_add.setOnClickListener(v -> {
+        Cart cart = new Cart(ShoppingCartActivity.this);
+        cart.addItem(product);
+        notifyItemChanged(position);
+      });
+
+      holder.cardItem_btn_subtract.setOnClickListener(v -> {
+        Cart cart = new Cart(ShoppingCartActivity.this);
+        cart.reduceItem(product);
+        notifyItemChanged(position);
+      });
     }
 
     @Override
@@ -77,6 +90,8 @@ public class ShoppingCartActivity extends AppCompatActivity {
       private final TextView cartItem_txt_name;
       private final TextView cardItem_txt_price;
       private final TextView cardItem_txt_count;
+      private final ImageButton cardItem_btn_add;
+      private final ImageButton cardItem_btn_subtract;
 
       public RvHolder(@NonNull View itemView) {
         super(itemView);
@@ -84,6 +99,8 @@ public class ShoppingCartActivity extends AppCompatActivity {
         cartItem_txt_name = itemView.findViewById(R.id.cartItem_txt_name);
         cardItem_txt_price = itemView.findViewById(R.id.cardItem_txt_price);
         cardItem_txt_count = itemView.findViewById(R.id.cardItem_txt_count);
+        cardItem_btn_add = itemView.findViewById(R.id.cardItem_btn_add);
+        cardItem_btn_subtract = itemView.findViewById(R.id.cardItem_btn_subtract);
       }
     }
   }
