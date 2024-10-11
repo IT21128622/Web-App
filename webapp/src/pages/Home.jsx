@@ -56,6 +56,13 @@ export default function Home() {
         </>
       );
     }
+    if (selectedKey === "users" && selectedSubKey === "customers") {
+      return (
+        <>
+          <CustomerList />
+        </>
+      );
+    }
     if (selectedKey === "orders" && !selectedSubKey) {
       return (
         <>
@@ -76,14 +83,6 @@ export default function Home() {
       return (
         <>
           <Comments />
-        </>
-      );
-    }
-
-    if (selectedKey === "customers" && !selectedSubKey) {
-      return (
-        <>
-          <CustomerList />
         </>
       );
     }

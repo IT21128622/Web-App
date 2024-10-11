@@ -1,12 +1,16 @@
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { createVender, getAllUsers } from "../../../api/services/authService";
-import UserModel from "../UserModel";
+import UserModel from "../modal/userModel";
+import VendorDetailModel from "../modal/vendorDetail";
 
 export default function VenderList() {
   const [vendorData, setVendorData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
+  const [id, setId] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [showDetailModal, setShowDetailModal] = useState(false);
 
   // Get the token from the Redux store
   const token = useSelector((state) => state.auth.loggedUser.token);
@@ -49,6 +53,11 @@ export default function VenderList() {
     }
   }, [token]);
 
+  const handleShowDetailModal = () => setShowDetailModal(true);
+  const handleCloseDetailModal = () => {
+    setShowDetailModal(false);
+  };
+
   const handleAddVendor = async (newVendor) => {
     if (!token) {
       alert("No token found. Please log in.");
@@ -86,6 +95,13 @@ export default function VenderList() {
     return <p>Loading...</p>;
   }
 
+  // Search filter
+  const filteredVendors = vendorData.filter(
+    (vendor) =>
+      vendor.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      vendor.email.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   // Render the table with admin profiles
   return (
     <div className="container">
@@ -103,7 +119,17 @@ export default function VenderList() {
           Add
         </button>
       </div>
-
+      <div className="d-flex justify-content-center m-3 w-100">
+        <div className="rounded w-75 p-3">
+          <input
+            type="text"
+            className="form-control"
+            placeholder="Search by username or email"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+      </div>
       <div className="table-wrapper">
         <table className="table custom-table">
           <thead>
@@ -114,19 +140,27 @@ export default function VenderList() {
             </tr>
           </thead>
           <tbody>
-            {vendorData?.length > 0 ? (
-              vendorData?.map((vendor) => (
+            {filteredVendors?.length > 0 ? (
+              filteredVendors?.map((vendor) => (
                 <tr key={vendor?.id}>
                   <td>{vendor?.username}</td>
                   <td>{vendor?.email}</td>
                   <td>
-                    <button className="btn btn-primary btn-sm">Details</button>
+                    <button
+                      className="btn btn-primary btn-sm"
+                      onClick={() => {
+                        setId(vendor.id);
+                        handleShowDetailModal();
+                      }}
+                    >
+                      Details
+                    </button>
                   </td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan="3">No admin profiles found</td>
+                <td colSpan="3">No vendor profiles found</td>
               </tr>
             )}
           </tbody>
@@ -137,6 +171,13 @@ export default function VenderList() {
         title="Add New Vendor"
         handleClose={handleCloseModal}
         handleAddUser={handleAddVendor}
+      />
+      <VendorDetailModel
+        show={showDetailModal}
+        id={id}
+        title="Vendor Details"
+        handleClose={handleCloseDetailModal}
+        userType="vendor"
       />
     </div>
   );

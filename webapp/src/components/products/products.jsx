@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import ProductModel from "./productModal";
 import { getAllProducts, createProduct, deleteProductByID,getAllProductsAdmin } from "../../api/services/productService";
 import ProductViewModal from "./ViewProduct";
-import ViewProductModal from "./ViewProductModel";
+import ViewProductModal from "./viewProductModel";
 import '../../styles/table.css'; 
 export default function Products() {
   const [productData, setProductData] = useState([]);
@@ -18,7 +18,7 @@ export default function Products() {
   // Get the token from the Redux store
   const token = useSelector((state) => state.auth.loggedUser.token);
   const role = useSelector((state) => state.auth.loggedUser.role);
-  console.log("Role:", role); // Log the role value
+
 
   useEffect(() => {
     try {

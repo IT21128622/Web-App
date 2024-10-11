@@ -219,10 +219,25 @@ namespace server.Services
     //Get admin by email
     public async Task<Admin?> GetAdminByEmailAsync(string email) =>
         await _adminCollection.Find(x => x.Email == email).FirstOrDefaultAsync();
+        
+      // Update admin by ID
+    public async Task UpdateCreateAdminAsync(string adminId, Admin updatedAdmin)
+    {
+      var filter = Builders<Admin>.Filter.Eq(a => a.Id, adminId);
+      var updateResult = await _adminCollection.ReplaceOneAsync(filter, updatedAdmin);
+
+      if (updateResult.MatchedCount == 0)
+      {
+        throw new Exception($"Admin with ID {adminId} not found.");
+      }
+    }
+
 
     // Update admin by ID (username, email, password)
     public async Task UpdateAdminAsync(string adminId, Admin updatedAdmin)
     {
+      Console.WriteLine("Updating admin");
+      Console.WriteLine("adminId " + adminId);
       var filter = Builders<Admin>.Filter.Eq(a => a.Id, adminId);
 
       var update = Builders<Admin>.Update
