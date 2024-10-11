@@ -10,4 +10,5 @@ public class ApiEndPoints {
   public static String ALL_CATEGORIES = "/api/Product/getCategories";
   public static String PRODUCT = "/api/Product/";
   public static String USER = "/api/user/customer/";
+  public static String UPDATE_PASSWORD = "/api/user/resetPassword/%s/customer";
 }

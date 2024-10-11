@@ -159,7 +159,7 @@ public class OtpActivity extends AppCompatActivity {
       @Override
       public void onSuccess(String response) {
         DialogHelper.hideLoading();
-        goToUpdatePassword();
+        goToUpdatePassword(otp);
       }
 
       @Override
@@ -176,10 +176,11 @@ public class OtpActivity extends AppCompatActivity {
     });
   }
 
-  private void goToUpdatePassword() {
+  private void goToUpdatePassword(String otp) {
     // add email to intent and go to update password activity
     Intent intent = new Intent(this, UpdatePasswordActivity.class);
     intent.putExtra("email", email);
+    intent.putExtra("otp", otp);
     startActivity(intent);
     finish();
   }

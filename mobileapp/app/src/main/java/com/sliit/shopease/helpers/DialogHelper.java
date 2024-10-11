@@ -26,6 +26,17 @@ public class DialogHelper {
     dialog.show();
   }
 
+  public static void showOkCallbackDialog(Context context, String title, String message, final OkCallback callback ){
+    AlertDialog.Builder builder = new AlertDialog.Builder(context);
+    builder.setTitle(title);
+    builder.setMessage(message);
+    builder.setPositiveButton("Ok", (dialogInterface, i) -> callback.onOk());
+
+    // Create and show the dialog
+    AlertDialog dialog = builder.create();
+    dialog.show();
+  }
+
   // Method to show an alert dialog with a callback for button clicks
   public static void showAlertWithCallback(Context context, String title, String message, final DialogCallback callback) {
     AlertDialog.Builder builder = new AlertDialog.Builder(context);
@@ -108,5 +119,9 @@ public class DialogHelper {
     void onOk(String inputText);  // Called when OK is clicked
 
     void onCancel();              // Called when Cancel is clicked
+  }
+
+  public interface OkCallback {
+    void onOk();
   }
 }

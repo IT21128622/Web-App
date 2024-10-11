@@ -1,6 +1,7 @@
 package com.sliit.shopease.activity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -23,6 +24,9 @@ public class UpdatePasswordActivity extends AppCompatActivity {
   private final UserRepo userRepo = new UserRepo();
   private EditText update_pass_edt_password;
   private EditText update_pass_edt_confirm_password;
+
+  private String email;
+  private String otp;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +55,9 @@ public class UpdatePasswordActivity extends AppCompatActivity {
     update_pass_edt_confirm_password = findViewById(R.id.update_pass_edt_confirm_password);
 
     update_pass_btn_update.setOnClickListener(this::updatePassword);
+
+    email = getIntent().getStringExtra("email");
+    otp = getIntent().getStringExtra("otp");
   }
 
   private void updatePassword(View v) {
@@ -76,15 +83,28 @@ public class UpdatePasswordActivity extends AppCompatActivity {
       return;
     }
 
-    userRepo.updatePassword(this, password, new NetworkCallback<String>() {
+    DialogHelper.showLoading(this, "Updating Password");
+    userRepo.updatePassword(this, email, password, otp, new NetworkCallback<Boolean>() {
       @Override
-      public void onSuccess(String response) {
-
+      public void onSuccess(Boolean response) {
+        DialogHelper.hideLoading();
+        runOnUiThread(() -> DialogHelper.showOkCallbackDialog(
+            UpdatePasswordActivity.this,
+            "Success",
+            "Password Successfully Updated",
+            () -> {
+              Intent i = new Intent(UpdatePasswordActivity.this, SignInActivity.class);
+              i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+              startActivity(i);
+              finish();
+            }
+        ));
       }
 
       @Override
       public void onFailure(ShopEaseError error) {
-
+        DialogHelper.hideLoading();
+        runOnUiThread(() -> DialogHelper.showAlert(UpdatePasswordActivity.this, "Error", error.getMessage()));
       }
     });
   }

@@ -131,11 +131,12 @@ public class NetworkHelper {
   }
 
   // Perform PUT Request
-  public void put(Context context, String url, String jsonBody, NetworkCallback callback) {
+  public void put(Context context, String url, Map<String, String> jsonBody, NetworkCallback<String> callback) {
     SharedPreferencesHelper sharedPreferencesHelper = new SharedPreferencesHelper(context);
     String baseUrl = sharedPreferencesHelper.getString(PrefKeys.BASE_URL, "");
 
-    RequestBody body = RequestBody.create(jsonBody, JSON);
+    String jsonString = new Gson().toJson(jsonBody);
+    RequestBody body = RequestBody.create(jsonString, JSON);
     Request request = new Request.Builder()
         .url(baseUrl + url)
         .put(body)

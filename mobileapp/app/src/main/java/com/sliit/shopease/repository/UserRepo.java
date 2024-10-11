@@ -67,7 +67,22 @@ public class UserRepo {
     });
   }
 
-  public void updatePassword(Context context, String password, NetworkCallback callback) {
+  public void updatePassword(Context context, String email, String password, String otp, NetworkCallback<Boolean> callback) {
+    final Map<String, String> jsonBody = new HashMap<>();
+    jsonBody.put("Password", password);
+    jsonBody.put("Code", otp);
 
+    networkHelper.put(context, String.format(ApiEndPoints.UPDATE_PASSWORD, email), jsonBody, new NetworkCallback<String>() {
+      @Override
+      public void onSuccess(String response) {
+        System.out.println("Password Reset Successful");
+        callback.onSuccess(true);
+      }
+
+      @Override
+      public void onFailure(ShopEaseError error) {
+        callback.onFailure(error);
+      }
+    });
   }
 }
