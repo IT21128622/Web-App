@@ -68,6 +68,16 @@ public class ProductActivity extends AppCompatActivity {
     loadData();
   }
 
+  @Override
+  protected void onResume() {
+    super.onResume();
+
+    cart = new Cart(this);
+    if(product != null) {
+      btn_add_cart.setText(getString(R.string.add_to_cart, cart.getProductCount(product)));
+    }
+  }
+
   private void goToCart(){
     Intent intent = new Intent(ProductActivity.this, ShoppingCartActivity.class);
     startActivity(intent);

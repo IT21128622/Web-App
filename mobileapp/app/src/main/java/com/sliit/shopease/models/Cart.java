@@ -28,10 +28,9 @@ public class Cart {
   //from json
   public static Map<String, Integer> fromJson(String jsonString) {
     Gson gson = new Gson();
-    Type type = new TypeToken<Map<String, Integer>>() {}.getType();
+    Type type = new TypeToken<Map<String, Integer>>() {
+    }.getType();
     return gson.fromJson(jsonString, type);
-
-
   }
 
   private void saveCart() {
@@ -40,8 +39,12 @@ public class Cart {
 
   public void addItem(Product product) {
     String productJson = product.toJson();
-    items.put(productJson, items.getOrDefault(productJson, 0) + 1);
-    saveCart();
+    final int inCart = items.getOrDefault(productJson, 0);
+
+    if (product.getStockLevel() > inCart) {
+      items.put(productJson, inCart + 1);
+      saveCart();
+    }
   }
 
   public void reduceItem(Product product) {

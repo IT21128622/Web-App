@@ -23,6 +23,7 @@ import com.sliit.shopease.models.Product;
 import java.util.Map;
 
 public class ShoppingCartActivity extends AppCompatActivity {
+  private Cart cart;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -35,7 +36,8 @@ public class ShoppingCartActivity extends AppCompatActivity {
       return insets;
     });
 
-    Cart cart = new Cart(this);
+    cart = new Cart(this);
+
     RecyclerView rv_cart = findViewById(R.id.cart_rv_items);
 
     LinearLayoutManager linearLayoutManager = new LinearLayoutManager(ShoppingCartActivity.this, LinearLayoutManager.VERTICAL, false);
@@ -45,10 +47,10 @@ public class ShoppingCartActivity extends AppCompatActivity {
   }
 
   public class RvAdapter extends RecyclerView.Adapter<RvAdapter.RvHolder> {
-    private final Map<String, Integer> data;
+    private final Cart cart;
 
     public RvAdapter(Cart cart) {
-      this.data = cart.getItems();
+      this.cart = cart;
     }
 
     @NonNull
@@ -60,29 +62,27 @@ public class ShoppingCartActivity extends AppCompatActivity {
 
     @Override
     public void onBindViewHolder(@NonNull RvHolder holder, int position) {
-      final String productJson = data.keySet().toArray()[position].toString();
+      final String productJson = cart.getItems().keySet().toArray()[position].toString();
       final Product product = Product.fromJson(productJson);
 
       holder.cartItem_txt_name.setText(product.getProductName());
       holder.cardItem_txt_price.setText(product.getPriceString());
-      holder.cardItem_txt_count.setText(String.valueOf(data.get(productJson)));
+      holder.cardItem_txt_count.setText(String.valueOf(cart.getProductCount(product)));
 
       holder.cardItem_btn_add.setOnClickListener(v -> {
-        Cart cart = new Cart(ShoppingCartActivity.this);
         cart.addItem(product);
-        notifyItemChanged(position);
+        holder.cardItem_txt_count.setText(String.valueOf(cart.getProductCount(product)));
       });
 
       holder.cardItem_btn_subtract.setOnClickListener(v -> {
-        Cart cart = new Cart(ShoppingCartActivity.this);
         cart.reduceItem(product);
-        notifyItemChanged(position);
+        holder.cardItem_txt_count.setText(String.valueOf(cart.getProductCount(product)));
       });
     }
 
     @Override
     public int getItemCount() {
-      return data.size();
+      return cart.getItems().size();
     }
 
 
