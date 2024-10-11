@@ -49,6 +49,9 @@ public class ShoppingCartActivity extends AppCompatActivity {
     rv_cart.setAdapter(rvAdapter);
 
     cart_btn_pay.setText(getString(R.string.pay_now, cart.getTotalPrice()));
+    if(cart.getItems().isEmpty()){
+      cart_btn_pay.setBackgroundColor(getResources().getColor(R.color.dark_gray));
+    }
   }
 
   private void pay(){
@@ -89,15 +92,21 @@ public class ShoppingCartActivity extends AppCompatActivity {
         cart.reduceItem(product);
         holder.cardItem_txt_count.setText(String.valueOf(cart.getProductCount(product)));
         cart_btn_pay.setText(getString(R.string.pay_now, cart.getTotalPrice()));
+        if(cart.getItems().isEmpty()){
+          cart_btn_pay.setBackgroundColor(getResources().getColor(R.color.dark_gray));
+        }
         notifyDataSetChanged();
       });
+
+      if(cart.getTotalPrice() == 0){
+        cart_btn_pay.setActivated(false);
+      }
     }
 
     @Override
     public int getItemCount() {
       return cart.getItems().size();
     }
-
 
     private class RvHolder extends RecyclerView.ViewHolder {
       private final TextView cartItem_txt_name;

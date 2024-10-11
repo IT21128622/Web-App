@@ -2,9 +2,12 @@ package com.sliit.shopease.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -43,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
   RvProductsAdapter rvProductsAdapter;
   private RecyclerView rv_categories;
   private RecyclerView rv_products;
+  private EditText main_edt_search;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -75,9 +79,27 @@ public class MainActivity extends AppCompatActivity {
 
     rv_categories = findViewById(R.id.rv_categories);
     rv_products = findViewById(R.id.rv_items);
+    main_edt_search = findViewById(R.id.main_edt_search);
 
     btn_profile.setOnClickListener(v -> goToProfile());
     main_btn_cart.setOnClickListener(v -> goToCart());
+    main_edt_search.addTextChangedListener(new TextWatcher() {
+      @Override
+      public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+      }
+
+      @Override
+      public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+        // Filter products based on the search query
+        if (rvProductsAdapter != null) {
+          rvProductsAdapter.filter(charSequence.toString());
+        }
+      }
+
+      @Override
+      public void afterTextChanged(Editable editable) {
+      }
+    });
 
     if (!Config.CATEGORIES) {
       rv_categories.setVisibility(View.GONE);
@@ -210,36 +232,108 @@ public class MainActivity extends AppCompatActivity {
     }
   }
 
+//  public class RvProductsAdapter extends RecyclerView.Adapter<RvProductsAdapter.RvProductHolder> {
+//    private final ArrayList<Product> data;
+//
+//    public RvProductsAdapter(ArrayList<Product> data) {
+//      this.data = data;
+//      Collections.shuffle(this.data);
+//    }
+//
+//    @NonNull
+//    @Override
+//    public RvProductHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+//      View view = LayoutInflater.from(MainActivity.this).inflate(R.layout.layout_item_rectangle, parent, false);
+//      return new RvProductsAdapter.RvProductHolder(view);
+//    }
+//
+//    @Override
+//    public void onBindViewHolder(@NonNull RvProductHolder holder, int position) {
+//      holder.txt_productName.setText(data.get(position).getProductName());
+//      holder.txt_productDescription.setText(data.get(position).getDescription());
+//      holder.txt_price.setText(data.get(position).getPriceString());
+//      holder.rec_txt_item_category.setText(data.get(position).getCategory());
+//      holder.rec_txt_item_stock.setText(String.valueOf(data.get(position).getStockLevel()));
+//
+//      holder.rec_item.setOnClickListener(v -> {
+//        Intent intent = new Intent(MainActivity.this, ProductActivity.class);
+//        intent.putExtra("productId", data.get(position).getId());
+//        startActivity(intent);
+//      });
+//
+//      final String imageUrl = data.get(position).getImageUrl();
+//      if (imageUrl != null) {
+//        Glide.with(MainActivity.this).load(imageUrl).into(holder.img_productImage);
+//      } else {
+//        holder.img_productImage.setImageResource(R.drawable.product_placeholder);
+//      }
+//    }
+//
+//    @Override
+//    public int getItemCount() {
+//      return data.size();
+//    }
+//
+//    class RvProductHolder extends RecyclerView.ViewHolder {
+//      private final TextView txt_productName;
+//      private final TextView txt_productDescription;
+//      private final ImageView img_productImage;
+//      private final TextView txt_price;
+//      private final TextView rec_txt_item_category;
+//      private final TextView rec_txt_item_stock;
+//      private final CardView rec_item;
+//
+//
+//      public RvProductHolder(@NonNull View itemView) {
+//        super(itemView);
+//
+//        txt_productName = itemView.findViewById(R.id.rec_txt_item_label);
+//        txt_productDescription = itemView.findViewById(R.id.rec_txt_item_description);
+//        img_productImage = itemView.findViewById(R.id.rec_img_item);
+//        txt_price = itemView.findViewById(R.id.rec_txt_item_price);
+//        rec_txt_item_category = itemView.findViewById(R.id.rec_txt_item_category);
+//        rec_txt_item_stock = itemView.findViewById(R.id.rec_txt_item_stock);
+//        rec_item = itemView.findViewById(R.id.rec_item);
+//      }
+//    }
+//
+//
+//  }
+
   public class RvProductsAdapter extends RecyclerView.Adapter<RvProductsAdapter.RvProductHolder> {
-    private final ArrayList<Product> data;
+    private final ArrayList<Product> originalData;  // Original product list
+    private ArrayList<Product> filteredData;        // Filtered product list
 
     public RvProductsAdapter(ArrayList<Product> data) {
-      this.data = data;
-      Collections.shuffle(this.data);
+      this.originalData = new ArrayList<>(data);  // Keep original data
+      Collections.shuffle(this.originalData);
+
+      this.filteredData = new ArrayList<>(originalData);  // Initially, filtered data is the same
     }
 
     @NonNull
     @Override
     public RvProductHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
       View view = LayoutInflater.from(MainActivity.this).inflate(R.layout.layout_item_rectangle, parent, false);
-      return new RvProductsAdapter.RvProductHolder(view);
+      return new RvProductHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull RvProductHolder holder, int position) {
-      holder.txt_productName.setText(data.get(position).getProductName());
-      holder.txt_productDescription.setText(data.get(position).getDescription());
-      holder.txt_price.setText(data.get(position).getPriceString());
-      holder.rec_txt_item_category.setText(data.get(position).getCategory());
-      holder.rec_txt_item_stock.setText(String.valueOf(data.get(position).getStockLevel()));
+      Product product = filteredData.get(position);
+      holder.txt_productName.setText(product.getProductName());
+      holder.txt_productDescription.setText(product.getDescription());
+      holder.txt_price.setText(product.getPriceString());
+      holder.rec_txt_item_category.setText(product.getCategory());
+      holder.rec_txt_item_stock.setText(String.valueOf(product.getStockLevel()));
 
       holder.rec_item.setOnClickListener(v -> {
         Intent intent = new Intent(MainActivity.this, ProductActivity.class);
-        intent.putExtra("productId", data.get(position).getId());
+        intent.putExtra("productId", product.getId());
         startActivity(intent);
       });
 
-      final String imageUrl = data.get(position).getImageUrl();
+      final String imageUrl = product.getImageUrl();
       if (imageUrl != null) {
         Glide.with(MainActivity.this).load(imageUrl).into(holder.img_productImage);
       } else {
@@ -249,7 +343,23 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public int getItemCount() {
-      return data.size();
+      return filteredData.size();
+    }
+
+    // Method to filter products
+    public void filter(String query) {
+      query = query.toLowerCase().trim();
+      filteredData.clear();
+      if (query.isEmpty()) {
+        filteredData.addAll(originalData);  // Show all products if search query is empty
+      } else {
+        for (Product product : originalData) {
+          if (product.getProductName().toLowerCase().contains(query)) {
+            filteredData.add(product);  // Add matching products to filtered list
+          }
+        }
+      }
+      notifyDataSetChanged();  // Notify adapter about changes
     }
 
     class RvProductHolder extends RecyclerView.ViewHolder {
@@ -274,7 +384,6 @@ public class MainActivity extends AppCompatActivity {
         rec_item = itemView.findViewById(R.id.rec_item);
       }
     }
-
 
   }
 
