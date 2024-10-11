@@ -14,7 +14,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class UserRepo {
-  final NetworkHelper networkHelper = NetworkHelper.getInstance();
+  private final NetworkHelper networkHelper = NetworkHelper.getInstance();
+  private final SharedPreferencesHelper sharedPreferencesHelper;
+
+  public UserRepo(Context context) {
+    sharedPreferencesHelper = new SharedPreferencesHelper(context);
+  }
 
   public void sendOtp(Context context, String email, NetworkCallback<String> callback) {
     networkHelper.post(context, ApiEndPoints.SEND_OTP + email + "/customer", null, new NetworkCallback<String>() {
@@ -35,7 +40,7 @@ public class UserRepo {
     User user = User.fromJson(sharedPreferencesHelper.getString(PrefKeys.USER, ""));
 
 
-    networkHelper.put(context, ApiEndPoints.UPDATE_USER + user.getId(), null, new NetworkCallback<String>() {
+    networkHelper.put(context, ApiEndPoints.UPDATE_USER + user.getId(), true, null, new NetworkCallback<String>() {
       @Override
       public void onSuccess(String response) {
         callback.onSuccess("success");
@@ -72,10 +77,27 @@ public class UserRepo {
     jsonBody.put("Password", password);
     jsonBody.put("Code", otp);
 
-    networkHelper.put(context, String.format(ApiEndPoints.UPDATE_PASSWORD, email), jsonBody, new NetworkCallback<String>() {
+    networkHelper.put(context, String.format(ApiEndPoints.UPDATE_PASSWORD, email), false, jsonBody, new NetworkCallback<String>() {
       @Override
       public void onSuccess(String response) {
         System.out.println("Password Reset Successful");
+        callback.onSuccess(true);
+      }
+
+      @Override
+      public void onFailure(ShopEaseError error) {
+        callback.onFailure(error);
+      }
+    });
+  }
+
+  public void disable(Context context, NetworkCallback<Boolean> callback) {
+    User user = User.fromJson(sharedPreferencesHelper.getString(PrefKeys.USER, ""));
+
+    final String api = String.format(ApiEndPoints.DISABLE_USER, user.getId(), user.getEmail());
+    networkHelper.put(context, api, true, null, new NetworkCallback<String>() {
+      @Override
+      public void onSuccess(String response) {
         callback.onSuccess(true);
       }
 

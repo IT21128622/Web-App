@@ -21,7 +21,7 @@ import com.sliit.shopease.models.ShopEaseError;
 import com.sliit.shopease.repository.UserRepo;
 
 public class UpdatePasswordActivity extends AppCompatActivity {
-  private final UserRepo userRepo = new UserRepo();
+  private UserRepo userRepo;
   private EditText update_pass_edt_password;
   private EditText update_pass_edt_confirm_password;
 
@@ -50,6 +50,8 @@ public class UpdatePasswordActivity extends AppCompatActivity {
     });
 
     Button update_pass_btn_update = findViewById(R.id.update_pass_btn_update);
+
+    userRepo = new UserRepo(this);
 
     update_pass_edt_password = findViewById(R.id.update_pass_edt_password);
     update_pass_edt_confirm_password = findViewById(R.id.update_pass_edt_confirm_password);

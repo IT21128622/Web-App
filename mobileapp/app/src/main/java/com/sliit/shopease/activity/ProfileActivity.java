@@ -19,10 +19,14 @@ import com.sliit.shopease.R;
 import com.sliit.shopease.constants.PrefKeys;
 import com.sliit.shopease.helpers.DialogHelper;
 import com.sliit.shopease.helpers.SharedPreferencesHelper;
+import com.sliit.shopease.interfaces.NetworkCallback;
+import com.sliit.shopease.models.ShopEaseError;
 import com.sliit.shopease.models.User;
+import com.sliit.shopease.repository.UserRepo;
 
 public class ProfileActivity extends AppCompatActivity {
   SharedPreferencesHelper sharedPreferencesHelper;
+  UserRepo userRepo;
   private EditText prof_edt_name;
   private EditText prof_edt_email;
   private TextView prof_txt_status;
@@ -38,8 +42,11 @@ public class ProfileActivity extends AppCompatActivity {
       return insets;
     });
 
+    userRepo = new UserRepo(this);
+
     Button prof_btn_logout = findViewById(R.id.prof_btn_logout);
     Button prof_btn_update = findViewById(R.id.prof_btn_update);
+    Button prof_btn_disable = findViewById(R.id.prof_btn_disable);
 
     prof_edt_email = findViewById(R.id.prof_edt_email);
     prof_edt_name = findViewById(R.id.prof_edt_name);
@@ -47,10 +54,43 @@ public class ProfileActivity extends AppCompatActivity {
 
     prof_btn_logout.setOnClickListener(v -> logout());
     prof_btn_update.setOnClickListener(this::update);
+    prof_btn_disable.setOnClickListener(this::disable);
 
     sharedPreferencesHelper = new SharedPreferencesHelper(this);
 
     setValues();
+  }
+
+  private void disable(View view) {
+    DialogHelper.showAlertWithCallback(ProfileActivity.this, "Alert!!!", "Are you sure you want to disable your account? Account can only be reactivated via a Admin or CSR!", new DialogHelper.DialogCallback() {
+      @Override
+      public void onOk(String inputText) {
+        DialogHelper.showLoading(ProfileActivity.this, "Disabling...");
+        userRepo.disable(ProfileActivity.this, new NetworkCallback<Boolean>() {
+          @Override
+          public void onSuccess(Boolean response) {
+            User user = User.fromJson(sharedPreferencesHelper.getString(PrefKeys.USER, ""));
+            user = user.copyWith(null, null, null, null, false);
+            sharedPreferencesHelper.saveString(PrefKeys.USER, user.toJson());
+
+            setValues();
+            DialogHelper.hideLoading();
+          }
+
+          @Override
+          public void onFailure(ShopEaseError error) {
+            DialogHelper.hideLoading();
+            runOnUiThread(()-> {
+              DialogHelper.showAlert(ProfileActivity.this, "Error", error.getMessage());
+            });
+          }
+        });
+      }
+
+      @Override
+      public void onCancel() {
+      }
+    });
   }
 
   private void setValues() {

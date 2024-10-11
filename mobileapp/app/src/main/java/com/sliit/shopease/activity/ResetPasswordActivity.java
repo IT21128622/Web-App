@@ -21,7 +21,7 @@ import com.sliit.shopease.models.ShopEaseError;
 import com.sliit.shopease.repository.UserRepo;
 
 public class ResetPasswordActivity extends AppCompatActivity {
-  private final UserRepo userRepo = new UserRepo();
+  private  UserRepo userRepo;
   private EditText reset_edt_email;
 
   @Override
@@ -46,6 +46,8 @@ public class ResetPasswordActivity extends AppCompatActivity {
     });
 
     Button reset_btn_submit = findViewById(R.id.reset_btn_submit);
+
+    userRepo = new UserRepo(this);
 
     reset_edt_email = findViewById(R.id.reset_edt_email);
 

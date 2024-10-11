@@ -131,18 +131,24 @@ public class NetworkHelper {
   }
 
   // Perform PUT Request
-  public void put(Context context, String url, Map<String, String> jsonBody, NetworkCallback<String> callback) {
+  public void put(Context context, String url, boolean includeAuth, Map<String, String> jsonBody, NetworkCallback<String> callback) {
     SharedPreferencesHelper sharedPreferencesHelper = new SharedPreferencesHelper(context);
     String baseUrl = sharedPreferencesHelper.getString(PrefKeys.BASE_URL, "");
+    User user = User.fromJson(sharedPreferencesHelper.getString(PrefKeys.USER, ""));
+    final String token = user.getToken();
 
     String jsonString = new Gson().toJson(jsonBody);
     RequestBody body = RequestBody.create(jsonString, JSON);
-    Request request = new Request.Builder()
-        .url(baseUrl + url)
-        .put(body)
-        .build();
 
-    client.newCall(request).enqueue(new Callback() {
+    Request.Builder request = new Request.Builder();
+    request.url(baseUrl + url);
+    request.setBody$okhttp(body);
+
+    if(includeAuth) {
+      request.header("Authorization", token);
+    }
+
+    client.newCall(request.build()).enqueue(new Callback() {
       @Override
       public void onFailure(@NonNull Call call, @NonNull IOException e) {
         callback.onFailure(new ShopEaseError(e));

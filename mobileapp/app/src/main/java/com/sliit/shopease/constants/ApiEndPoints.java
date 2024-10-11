@@ -11,4 +11,5 @@ public class ApiEndPoints {
   public static String PRODUCT = "/api/Product/";
   public static String USER = "/api/user/customer/";
   public static String UPDATE_PASSWORD = "/api/user/resetPassword/%s/customer";
+  public static String DISABLE_USER = "/api/user/deactivate/%s/%s/customer";
 }

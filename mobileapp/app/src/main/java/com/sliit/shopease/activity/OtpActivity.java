@@ -24,9 +24,8 @@ import com.sliit.shopease.models.ShopEaseError;
 import com.sliit.shopease.repository.UserRepo;
 
 public class OtpActivity extends AppCompatActivity {
-  private final UserRepo userRepo = new UserRepo();
-
   String email;
+  private UserRepo userRepo;
   private EditText edt_otp1;
   private EditText edt_otp2;
   private EditText edt_otp3;
@@ -56,6 +55,8 @@ public class OtpActivity extends AppCompatActivity {
     });
 
     Button otp_btn_submit = findViewById(R.id.otp_btn_submit);
+
+    userRepo = new UserRepo(this);
 
     edt_otp1 = findViewById(R.id.edt_otp1);
     edt_otp2 = findViewById(R.id.edt_otp2);
