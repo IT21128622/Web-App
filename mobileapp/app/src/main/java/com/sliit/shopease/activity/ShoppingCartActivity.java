@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -22,6 +23,7 @@ import com.sliit.shopease.models.Product;
 
 public class ShoppingCartActivity extends AppCompatActivity {
   private Cart cart;
+  private Button cart_btn_pay;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -37,11 +39,20 @@ public class ShoppingCartActivity extends AppCompatActivity {
     cart = new Cart(this);
 
     RecyclerView rv_cart = findViewById(R.id.cart_rv_items);
+    cart_btn_pay = findViewById(R.id.cart_btn_pay);
+
+    cart_btn_pay.setOnClickListener(v -> pay());
 
     LinearLayoutManager linearLayoutManager = new LinearLayoutManager(ShoppingCartActivity.this, LinearLayoutManager.VERTICAL, false);
     RvAdapter rvAdapter = new RvAdapter(cart);
     rv_cart.setLayoutManager(linearLayoutManager);
     rv_cart.setAdapter(rvAdapter);
+
+    cart_btn_pay.setText(getString(R.string.pay_now, cart.getTotalPrice()));
+  }
+
+  private void pay(){
+
   }
 
   public class RvAdapter extends RecyclerView.Adapter<RvAdapter.RvHolder> {
@@ -71,11 +82,14 @@ public class ShoppingCartActivity extends AppCompatActivity {
       holder.cardItem_btn_add.setOnClickListener(v -> {
         cart.addItem(product);
         holder.cardItem_txt_count.setText(String.valueOf(cart.getProductCount(product)));
+        cart_btn_pay.setText(getString(R.string.pay_now, cart.getTotalPrice()));
       });
 
       holder.cardItem_btn_subtract.setOnClickListener(v -> {
         cart.reduceItem(product);
         holder.cardItem_txt_count.setText(String.valueOf(cart.getProductCount(product)));
+        cart_btn_pay.setText(getString(R.string.pay_now, cart.getTotalPrice()));
+        notifyDataSetChanged();
       });
     }
 
