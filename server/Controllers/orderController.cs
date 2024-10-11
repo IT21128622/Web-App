@@ -165,6 +165,73 @@ namespace MongoExample.Controllers
       return Ok(order);
     }
 
+[HttpPut("update-product-status/{orderId}/{productId}/{status}")]
+public async Task<IActionResult> UpdateProductStatus(string orderId, string productId, ProductDeliveryStatus status)
+{
+    try
+    {
+        // Validate token
+        var token = Request.Headers["Authorization"];
+        if (token.Count == 0)
+        {
+            return Unauthorized("Token is required.");
+        }
+
+        var user = JWTService.ValidateToken(token, _jwtSettings.SecurityKey);
+        if (user == null)
+        {
+            return Unauthorized("Invalid token.");
+        }
+
+        // Validate necessary fields
+        if (string.IsNullOrEmpty(orderId) || string.IsNullOrEmpty(productId))
+        {
+            return BadRequest("Order ID and Product ID are required.");
+        }
+
+        // Retrieve order details
+        var order = await _mongoDBService.GetOrderByOrderIdAsync(orderId);
+        if (order == null || order.OrderId != orderId)
+        {
+            return NotFound("Order not found or order ID does not match.");
+        }
+
+        // Check if the order is already delivered or cancelled
+        if (order.Status == OrderStatus.Delivered || order.Status == OrderStatus.Cancelled)
+        {
+            return BadRequest("Order is already delivered or cancelled.");
+        }
+
+        // Ensure the product exists in the order
+        if (!order.Products.ContainsKey(productId))
+        {
+            return NotFound($"Product with ID {productId} not found in the order.");
+        }
+
+        // Call the service function to update the product's delivery status
+        var productUpdateSuccess = await _mongoDBService.UpdateProductDeliveryStatusAsync(orderId, productId, status);
+        
+        if (!productUpdateSuccess)
+        {
+            return StatusCode(500, $"Failed to update delivery status for product {productId}");
+        }
+
+        // Update the order's statusUpdatedOn field
+        order.StatusUpdatedOn = DateTime.UtcNow.ToString("dd/MM/yyyy HH:mm:ss");
+
+        // Save the updated order (without affecting other products' delivery statuses)
+        await _mongoDBService.UpdateOrder(order);
+
+        return Ok(new { message = "Product status updated successfully.", updatedProductStatus = status });
+    }
+    catch (Exception ex)
+    {
+        return BadRequest(ex.Message);
+    }
+}
+
+
+
     //Cancel an order by customer before Dispatched
     [HttpPut("cancel-order/{orderId}")]
     public async Task<IActionResult> CancelOrder(string orderId)

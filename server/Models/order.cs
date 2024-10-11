@@ -14,11 +14,23 @@ public enum OrderStatus
     Cancelled
 }
 
+// Defined an enum for ProductDeliveryStatus
+public enum ProductDeliveryStatus
+{  
+    Processing,
+    Ready,
+    Dispatched,
+    Delivered,
+    Cancelled
+}
 // Defined a class for ProductDetails with Price and Quantity properties
 public class ProductDetails
 {
     public decimal Price { get; set; }
     public int Quantity { get; set; }
+
+    [BsonElement("deliveryStatus")]
+    public ProductDeliveryStatus DeliveryStatus { get; set; } = ProductDeliveryStatus.Processing; // Default status
 }
 
 

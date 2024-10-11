@@ -48,6 +48,18 @@ namespace server.Services
       }
     }
 
+
+    // Update the delivery status of a specific product in an order
+ public async Task<bool> UpdateProductDeliveryStatusAsync(string orderId, string productId, ProductDeliveryStatus newStatus)
+{
+    var filter = Builders<Order>.Filter.Eq(o => o.Id, orderId) & Builders<Order>.Filter.Eq($"products.{productId}", productId);
+    var update = Builders<Order>.Update.Set($"products.{productId}.deliveryStatus", newStatus);
+
+    var result = await _orderCollection.UpdateOneAsync(filter, update);
+    return result.ModifiedCount > 0;
+}
+
+
     // Product methods
     public async Task<List<Product>> GetProductsAsync()
     {
@@ -219,8 +231,8 @@ namespace server.Services
     //Get admin by email
     public async Task<Admin?> GetAdminByEmailAsync(string email) =>
         await _adminCollection.Find(x => x.Email == email).FirstOrDefaultAsync();
-        
-      // Update admin by ID
+
+    // Update admin by ID
     public async Task UpdateCreateAdminAsync(string adminId, Admin updatedAdmin)
     {
       var filter = Builders<Admin>.Filter.Eq(a => a.Id, adminId);

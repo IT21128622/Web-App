@@ -1,7 +1,7 @@
 import React from "react";
 import { getAllOrders } from "../../api/services/orderService";
 import { useDispatch, useSelector } from "react-redux";
-import { ButtonGroup, Button, Badge } from "react-bootstrap";
+import { Badge } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { setOrderResponse } from "../../redux/order/orderSlice";
 import ViewOrderModal from "./orderModal";
@@ -41,6 +41,8 @@ export default function OrderList() {
       if (response) {
         setOrderData(response);
         setLoading(false);
+        alert("Order List fetched successfully");
+        console.log("Order List:", orderData);
       } else {
         setLoading(false);
         alert("Invalid response from server");
