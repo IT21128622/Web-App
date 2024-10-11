@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { getAllUsers, createUser } from "../../../api/services/authService";
 import UserModel from "../modal/userModel";
-import UserDetailModel from "../modal/userDetailModel";
+import UserDetailModel from "../modal/adminDetail";
 
 export default function AdminTable() {
   const [adminData, setAdminData] = useState([]);

@@ -19,7 +19,6 @@ export default function UserDetailModel({ show, id, title, handleClose }) {
 
   const [showAdminCreated, setShowAdminCreated] = useState(false);
   const [showCsrCreated, setShowCsrCreated] = useState(false);
-  const [showCustomerApproved, setShowCustomerApproved] = useState(false);
   const [showVendorCreated, setShowVendorCreated] = useState(false);
   const token = useSelector((state) => state.auth.loggedUser.token);
 
@@ -125,18 +124,6 @@ export default function UserDetailModel({ show, id, title, handleClose }) {
             }}
           >
             Vendor Created
-          </button>
-          <button
-            //   onClick={handleShowModal}
-            className="btn btn-primary btn-block m-2 p-2"
-            style={{
-              padding: "10px 20px",
-              width: "100px",
-              fontSize: "16px",
-              fontWeight: "bold",
-            }}
-          >
-            Customer Approved
           </button>
         </div>
         {showAdminCreated && <UserCreated admins={user.adminsCreated} />}
