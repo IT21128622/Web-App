@@ -285,7 +285,6 @@ export default function ViewOrderModal({ show, handleClose }) {
               Approve Cancel Request
             </button>
             <button
-              className="btn btn-danger btn-sm m-2 rounded"
               onClick={handleRejectRequestToCancel}
             >
               Reject Cancel Request

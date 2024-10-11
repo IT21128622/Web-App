@@ -37,7 +37,7 @@ export const navKeys = [
   {
     key: "comments",
     name: "Comments",
-    icon: "FaBox",
+    icon: "FaComments",
     subPages: [], // Products main page
   },
 ];

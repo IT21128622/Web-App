@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaHome, FaBell,FaBox, FaEye, FaShoppingCart, FaUsers, FaIndustry, FaBoxes} from 'react-icons/fa';
+import { FaHome, FaBell,FaBox, FaEye, FaShoppingCart, FaUsers, FaIndustry, FaBoxes ,FaComments} from 'react-icons/fa';
 
 const IconRenderer = ({ iconKey }) => {
   switch (iconKey) {
@@ -19,6 +19,8 @@ const IconRenderer = ({ iconKey }) => {
       return <FaBoxes />;
     case 'FaBox':
       return <FaBox />;
+    case 'FaComments':
+      return <FaComments />;
     default:
       return null;
   }

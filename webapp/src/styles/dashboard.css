@@ -1,0 +1,12 @@
+.dashboard-card {
+    display: flex;
+    gap: 10px; 
+  }
+  .chart-container {
+    width: 400px; 
+    height: 400px; 
+    margin: 0 auto; 
+    text-align: center;
+    padding-top: 10px;
+   
+  }
