@@ -1,0 +1,42 @@
+.card {
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    display: flex;
+    transition: box-shadow 0.3s ease;
+    margin-bottom: 8px; 
+    width: 350px;
+  }
+  
+  .card:hover {
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+  }
+
+  .card-content .card-title {
+    margin: 0;
+    color: #333;
+    text-align: left;
+  }
+
+  /* Added row for icon and detail */
+  .card-detail-row {
+    display: flex;
+    justify-content: space-between; /* Ensures spacing between icon and detail */
+    align-items: center; /* Vertically aligns the icon and text */
+  }
+
+  .card-content .card-detail {
+    /* font-weight: bold; */
+    margin-top: 5px;
+    color: #666;
+    flex-grow: 1; /* Allows the detail to take up remaining space */
+    /* text-align: right; */
+    padding-left: 30px;
+  }
+
+  .card-icon {
+    font-size: 3rem;
+    color: #F17300;
+    margin-left: 15px; /* Adds some space between the detail and the icon */
+  }

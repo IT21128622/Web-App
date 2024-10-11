@@ -35,11 +35,10 @@ export const loginAction = (email, password, role, navigate) => {
   
   
 //Sign Out
-export const signOutAction = () => {
+export const signOutAction = (navigate) => {
   return async (dispatch) => {
     try {
       dispatch(resetState());
-      const navigate = useNavigate();
       navigate("/");
     } catch (error) {
       console.error("Sign out error:", error);
@@ -50,7 +49,6 @@ export const signOutAction = () => {
       ) {
         dispatch(setMessage(error.response.data.message));
       } else {
-        console.error("Sign out error:", error);
         dispatch(setMessage("An error occurred while signing out."));
       }
     }

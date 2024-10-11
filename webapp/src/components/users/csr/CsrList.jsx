@@ -107,26 +107,21 @@ export default function CsrList() {
   // Render the table with admin profiles
   return (
     <div className="container">
-      <div style={{ paddingBottom: "20px" }}>
-        <button
-          onClick={handleShowModal}
-          className="btn btn-primary btn-block mt-4"
-          style={{
-            padding: "10px 20px",
-            width: "100px",
-            fontSize: "16px",
-            fontWeight: "bold",
-          }}
-        >
-          Add
-        </button>
-      </div>
-      <div className="d-flex justify-content-center m-3 w-100">
-        <div className="rounded w-75 p-3">
+      <div className="header-container d-flex justify-content-between align-items-center">
+        <div>
+          <button
+            onClick={handleShowModal}
+            className="btn btn-primary btn-block"
+            style={{ padding: "5px 10px", width: "100px", fontSize: "16px", fontWeight: "bold" }}
+          >
+            Add
+          </button>
+        </div>
+        <div className="search-container">
           <input
             type="text"
-            className="form-control"
-            placeholder="Search by username or email"
+            className="form-control search-input"
+            placeholder="Search by name or category"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
