@@ -20,7 +20,7 @@ export default function Navbar({ getSelectedKey, getSelectedSubKey }) {
   };
 
   return (
-    <div className="navbar-container">
+    <div className="navbar-container ">
       {/* Logo and Title */}
       <div className="navbar-logo">
         <img src={logo} alt="System Logo" className="logo-image" />
