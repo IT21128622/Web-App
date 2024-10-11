@@ -19,30 +19,30 @@ export const navKeys = [
     key: 'orders',
     name: 'Orders',
     icon: 'FaShoppingCart',
-    subPages: [] // No subpages, orders main page
+    subPages: [] 
   },
   {
     key: 'inventory',
     name: 'Inventory',
     icon: 'FaBoxes',
-    subPages: [] // No subpages, inventory main page
+    subPages: []
   },
   {
     key: 'customers',
     name: 'Customers',
     icon: 'FaEye',
-    subPages: [] // Views main page
+    subPages: []
   },
   {
     key: 'products',
     name: 'Products',
     icon: 'FaBox',
-    subPages: [] // Products main page
+    subPages: [] 
   },
   {
     key: 'comments',
     name: 'Comments',
-    icon: 'FaBox',
-    subPages: [] // Products main page
+    icon: 'FaComments',
+    subPages: [] 
   },
 ];
