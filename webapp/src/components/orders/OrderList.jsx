@@ -18,6 +18,8 @@ export default function OrderList() {
 
   // Get the token from the Redux store
   const token = useSelector((state) => state.auth.loggedUser.token);
+  const role = useSelector((state) => state.auth.loggedUser.role);
+  const userId = useSelector((state) => state.auth.loggedUser.id);
 
   // Enum for order status
   const OrderStatus = {
@@ -28,7 +30,7 @@ export default function OrderList() {
     4: "Cancelled",
   };
 
-  //handle close modal
+  // Handle close modal
   const handleClose = () => {
     setShowModal(false);
   };
@@ -37,21 +39,53 @@ export default function OrderList() {
   const getOrderList = async () => {
     try {
       setLoading(true);
-      const response = await getAllOrders(token);
-      if (response) {
-        setOrderData(response);
-        setLoading(false);
-        alert("Order List fetched successfully");
-        console.log("Order List:", orderData);
-      } else {
-        setLoading(false);
-        alert("Invalid response from server");
-        throw new Error("Invalid response from server");
+
+      // Fetch all orders for admin or csr
+      if (role === "admin" || role === "csr") {
+        const response = await getAllOrders(token);
+        if (response) {
+          setOrderData(response);
+          console.log("Order List:", response);
+        } else {
+          alert("Invalid response from server");
+          throw new Error("Invalid response from server");
+        }
       }
+
+      // Fetch and filter orders for vendor
+      if (role === "vendor") {
+        const response = await getAllOrders(token);
+        if (response) {
+          // Filter products for the specific vendor
+          const filteredOrders = response.map((order) => {
+            const filteredProducts = Object.entries(order.products)
+              .filter(
+                ([productId, productDetails]) => productDetails.venderId === userId
+              ) // Filter by vendor ID
+              .reduce((acc, [productId, productDetails]) => {
+                acc[productId] = productDetails;
+                return acc;
+              }, {});
+
+            return {
+              ...order,
+              products: filteredProducts, // Update products with only the vendor's products
+            };
+          });
+
+          setOrderData(filteredOrders);
+          console.log("Filtered Order List:", filteredOrders);
+        } else {
+          alert("Invalid response from server");
+          throw new Error("Invalid response from server");
+        }
+      }
+
+      setLoading(false);
     } catch (error) {
       console.error("Error fetching order list:", error);
       setError("Failed to fetch order list");
-      setLoading(Error);
+      setLoading(false); // Fixed this
     }
   };
 
@@ -97,7 +131,7 @@ export default function OrderList() {
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
-     <button type="submit" className="btn btn-primary p-2 m-2 rounded">
+        <button type="submit" className="btn btn-primary p-2 m-2 rounded">
           <i className="bi bi-search"></i>
         </button>
       </div>
@@ -123,23 +157,26 @@ export default function OrderList() {
                   </Badge>
                 </td>
                 <td>
-                  <button className="btn btn-primary btn-sm"
-                  onClick={() => {
-                   dispatch(setOrderResponse(order));  
-                   setShowModal(true);   
-                  }}
-                  >View</button>
+                  <button
+                    className="btn btn-primary btn-sm"
+                    onClick={() => {
+                      dispatch(setOrderResponse(order));
+                      setShowModal(true);
+                    }}
+                  >
+                    View
+                  </button>
                 </td>
               </tr>
             ))
           ) : (
             <tr>
-              <td colSpan="3">No Orders found found</td>
+              <td colSpan="3">No Orders found</td>
             </tr>
           )}
         </tbody>
       </table>
-      <ViewOrderModal show={showModal} handleClose={handleClose} />       
+      <ViewOrderModal show={showModal} handleClose={handleClose} />
     </div>
   );
 }

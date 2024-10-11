@@ -3,10 +3,19 @@ import { Modal, Button, Form, Badge } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import { useState, useEffect } from "react";
 import { getProductByID } from "../../api/services/productService";
+import {
+  approveToCancelOrder,
+  updateStatusDelivery,
+  updateStatusDispatch,
+  updateStatusReady,
+} from "../../api/services/orderService";
 
 export default function ViewOrderModal({ show, handleClose }) {
   // const token = useSelector((state) => state.auth.loggedUser.token);
   const order = useSelector((state) => state.order);
+  const userID = useSelector((state) => state.auth.loggedUser.id);
+  const token = useSelector((state) => state.auth.loggedUser.token);
+  const role = useSelector((state) => state.auth.loggedUser.role);
 
   // Add this to store product details
   const [products, setProducts] = useState({});
@@ -51,6 +60,98 @@ export default function ViewOrderModal({ show, handleClose }) {
     2: "primary", // Dispatched
     3: "success", // Delivered
     4: "danger", // Cancelled
+  };
+
+  const handleStatusReadyUpdate = async () => {
+    try {
+      const response = await updateStatusReady(
+        role,
+        userID,
+        token,
+        order.orderId
+      );
+      if (response) {
+        alert(response);
+        window.location.reload();
+      } else {
+        alert("Failed to update order status");
+      }
+    } catch (error) {
+      console.error("Error updating order status:", error);
+      alert("Failed to update order status");
+    }
+  };
+
+  const handleStatusDispatchedUpdate = async () => {
+    try {
+      const response = await updateStatusDispatch(
+        role,
+        userID,
+        token,
+        order.orderId
+      );
+      if (response) {
+        alert(response);
+        window.location.refresh();
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Sorry an error occured!");
+    }
+  };
+
+  const handleStatusDeliveredUpdate = async () => {
+    try {
+      const response = await updateStatusDelivery(
+        role,
+        userID,
+        token,
+        order.orderId
+      );
+      if (response) {
+        alert(response);
+        window.location.refresh();
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Sorry an error occured!");
+    }
+  };
+
+  const handleRequestToCancel = async () => {
+    try {
+      const response = await approveToCancelOrder(
+        role,
+        userID,
+        token,
+        order.orderId
+      );
+      if (response) {
+        alert(response);
+        window.location.refresh();
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Sorry an error occured!");
+    }
+  };
+
+  const handleRejectRequestToCancel = async () => {
+    try {
+      const response = await approveToCancelOrder(
+        role,
+        userID,
+        token,
+        order.orderId
+      );
+      if (response) {
+        alert(response);
+        window.location.refresh();
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Sorry an error occured!");
+    }
   };
 
   return (
@@ -124,6 +225,7 @@ export default function ViewOrderModal({ show, handleClose }) {
                     <th scope="col">Product Name</th>
                     <th scope="col">Price</th>
                     <th scope="col">Quantity</th>
+                    <th scope="col">Status</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -134,6 +236,16 @@ export default function ViewOrderModal({ show, handleClose }) {
                       </td>
                       <td>{details.price}</td>
                       <td>{details.quantity}</td>
+                      {details.deliveryStatus == order.status  && (
+                      <Badge bg={badgeClass[details.deliveryStatus]} className="m-2">
+                        {OrderStatus[details.deliveryStatus]}
+                      </Badge>
+                      )}
+                          {details.deliveryStatus != order.status  && (
+                      <Badge bg={badgeClass[order.status]} className="m-2">
+                        {OrderStatus[order.status]}
+                      </Badge>
+                      )}
                     </tr>
                   ))}
                 </tbody>
@@ -164,12 +276,18 @@ export default function ViewOrderModal({ show, handleClose }) {
             </Form.Group>
           </div>
         )}
-        {order?.requestToCancel == true && (
+        {order?.requestToCancel == true && role == "csr" && (
           <div className="d-flex p-2  justify-content-center align-items-center">
-            <button className="btn btn-primary btn-sm m-2 rounded" onClick={handleClose}>
+            <button
+              className="btn btn-primary btn-sm m-2 rounded"
+              onClick={handleRequestToCancel}
+            >
               Approve Cancel Request
             </button>
-            <button className="btn btn-danger btn-sm m-2 rounded" onClick={handleClose}>
+            <button
+              className="btn btn-danger btn-sm m-2 rounded"
+              onClick={handleRejectRequestToCancel}
+            >
               Reject Cancel Request
             </button>
           </div>
@@ -187,8 +305,55 @@ export default function ViewOrderModal({ show, handleClose }) {
           </div>
         )}
 
-    {/* {order?.cancelled == true && ( */}
-        
+        <p className="text-center">Update Overall Order Status</p>
+        {order?.cancelled == false && (
+          <div className="d-flex p-2  justify-content-center align-items-center">
+            {role == "vendor" && (
+              <Form.Group className="m-3">
+                <button
+                  onClick={handleStatusReadyUpdate}
+                  className="btn btn-primary btn-block mt-4 p-2"
+                  style={{
+                    padding: "10px 20px",
+                    width: "100px",
+                    fontSize: "16px",
+                    fontWeight: "bold",
+                  }}
+                >
+                  Ready
+                </button>
+              </Form.Group>
+            )}
+            <Form.Group className="m-3">
+              <button
+                onClick={handleStatusDispatchedUpdate}
+                className="btn btn-primary btn-block mt-4 p-2"
+                style={{
+                  padding: "10px 20px",
+                  width: "100px",
+                  fontSize: "16px",
+                  fontWeight: "bold",
+                }}
+              >
+                Dispatched
+              </button>
+            </Form.Group>
+            <Form.Group className="m-3">
+              <button
+                onClick={handleStatusDeliveredUpdate}
+                className="btn btn-primary btn-block mt-4 p-2"
+                style={{
+                  padding: "10px 20px",
+                  width: "100px",
+                  fontSize: "16px",
+                  fontWeight: "bold",
+                }}
+              >
+                Delivered
+              </button>
+            </Form.Group>
+          </div>
+        )}
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={handleClose}>

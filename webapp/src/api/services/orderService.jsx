@@ -16,8 +16,8 @@ export const getAllOrders = async (token) => {
 
 export const approveToCancelOrder = async (role, userId, token, orderId) => {
   try {
-    const response = await apiClient.post(
-      `api/orders/approve-cancel-order/${orderId}`,
+    const response = await apiClient.put(
+      `api/orders/approve-request-to-cancel-order/${orderId}`,
       {
         role,
         userId,
@@ -37,7 +37,7 @@ export const approveToCancelOrder = async (role, userId, token, orderId) => {
 
 export const rejectToCancelOrder = async (role, userId, token, orderId) => {
   try {
-    const response = await apiClient.post(
+    const response = await apiClient.put(
       `/api/orders/reject-request-to-cancel-order/${orderId}`,
       {
         role,
@@ -58,7 +58,7 @@ export const rejectToCancelOrder = async (role, userId, token, orderId) => {
 
 export const updateStatusDelivery = async (role, userId, token, orderId) => {
   try {
-    const response = await apiClient.post(
+    const response = await apiClient.put(
       `/api/orders/order-status-delivered/${orderId}`,
       {
         role,
@@ -79,7 +79,7 @@ export const updateStatusDelivery = async (role, userId, token, orderId) => {
 
 export const updateStatusReady = async (role, userId, token, orderId) => {
   try {
-    const response = await apiClient.post(
+    const response = await apiClient.put(
       `/api/orders/order-status-ready/${orderId}`,
       {
         role,
@@ -100,7 +100,7 @@ export const updateStatusReady = async (role, userId, token, orderId) => {
 
 export const updateStatusDispatch = async (role, userId, token, orderId) => {
   try {
-    const response = await apiClient.post(
+    const response = await apiClient.put(
       `/api/orders/order-status-dispatched/${orderId}`,
       {
         role,
@@ -170,3 +170,4 @@ export const getcanceledOrderByScr = async (token, scrId) => {
     return error.response.data;
   }
 };
+

@@ -29,7 +29,7 @@ namespace MongoExample.Controllers
     [HttpPost("create-order")]
     public async Task<IActionResult> CreateOrder(OrderDTO orderDTO)
     {
-      //validate token
+      // Validate token
       var token = Request.Headers["Authorization"];
       if (token.Count == 0)
       {
@@ -43,7 +43,7 @@ namespace MongoExample.Controllers
         return Unauthorized("Invalid token.");
       }
 
-      //Validate necessary fields
+      // Validate necessary fields
       if (orderDTO.ShippingAddress == null || orderDTO.BillingAddress == null || orderDTO.Email == null || orderDTO.Products == null || orderDTO.TotalPrice == 0 || orderDTO.TotalQty == 0 || orderDTO.UserId == null)
       {
         return BadRequest("Missing required fields.");
@@ -58,7 +58,7 @@ namespace MongoExample.Controllers
         return NotFound("User not found or user ID does not match.");
       }
 
-      //Check if the number of products is greater than 0
+      // Check if the number of products is greater than 0
       if (orderDTO.Products.Count < 1)
       {
         return BadRequest("At least one product is required.");
@@ -83,13 +83,14 @@ namespace MongoExample.Controllers
         int updatedQuantity = productDetail.StockLevel - product.Value.Quantity;
         await _mongoDBService.DeductAvailableStock(product.Key, updatedQuantity);
 
-        //If stock level is less than minimum stock level, send email notification
+        // If stock level is less than minimum stock level, send email notification
         if (updatedQuantity < productDetail.MinStockLevel)
         {
-          //Get Vendor by Id
+          // Get Vendor by Id
           var vendorDetail = await _mongoDBService.GetVendorByIdAsync(productDetail.VenderId);
           await _emailService.SendEmailAsync(vendorDetail.Email, "Low stock level", $"The stock level for product {productDetail.ProductName} is low. Available: {updatedQuantity}");
-          //Add Notification
+
+          // Add Notification
           var lowStockNotification = await _mongoDBService.CreateNotification(new Notification
           {
             Message = $"Low stock level for product {productDetail.ProductName}",
@@ -103,14 +104,9 @@ namespace MongoExample.Controllers
             return BadRequest("Failed to add notification.");
           }
         }
-
-
-
       }
 
-
-
-      //Create a random unique 4 digit order ID not in the database
+      // Create a random unique 4-digit order ID not in the database
       Random random = new Random();
       string orderID = random.Next(1000, 9999).ToString();
       while (await _mongoDBService.GetOrderByOrderIdAsync(orderID) != null)
@@ -118,7 +114,7 @@ namespace MongoExample.Controllers
         orderID = random.Next(1000, 9999).ToString();
       }
 
-      //Check if email already exists
+      // Check if email already exists
       var orderEmail = await _mongoDBService.GetCustomerByEmailAsync(orderDTO.Email);
 
       if (orderEmail == null)
@@ -126,7 +122,7 @@ namespace MongoExample.Controllers
         return BadRequest("Email does not exist.");
       }
 
-      //Add to Notification
+      // Add Notification
       var notification = await _mongoDBService.CreateNotification(new Notification
       {
         Message = "Order created",
@@ -135,13 +131,13 @@ namespace MongoExample.Controllers
         UserId = orderDTO.UserId
       });
 
-      //Send email notification
+      // Send email notification
       if (userDetail != null)
       {
         await _emailService.SendEmailAsync(userDetail.Email, "Order created", "Your order has been created.");
       }
 
-      // Create a new Order
+      // Create a new Order with VendorId included in ProductDetails
       var order = new Order
       {
         OrderId = orderID,
@@ -152,8 +148,18 @@ namespace MongoExample.Controllers
         BillingAddress = orderDTO.BillingAddress,
         Email = orderDTO.Email,
         Products = orderDTO.Products.ToDictionary(
-              x => x.Key,
-              x => new ProductDetails { Price = x.Value.Price, Quantity = x.Value.Quantity }
+                x => x.Key,
+                x =>
+                {
+                  var productDetail = _mongoDBService.GetProductAsync(x.Key).Result; // Fetch the product detail to get VendorId
+                  return new ProductDetails
+                  {
+                    Price = x.Value.Price,
+                    Quantity = x.Value.Quantity,
+                    VenderId = productDetail.VenderId,  // Set VendorId from database
+                    DeliveryStatus = ProductDeliveryStatus.Processing
+                  };
+                }
           ),
         TotalPrice = orderDTO.TotalPrice,
         TotalQty = orderDTO.TotalQty,
@@ -165,55 +171,55 @@ namespace MongoExample.Controllers
       return Ok(order);
     }
 
-[HttpPut("update-product-status/{orderId}/{productId}/{status}")]
-public async Task<IActionResult> UpdateProductStatus(string orderId, string productId, ProductDeliveryStatus status)
-{
-    try
+    [HttpPut("update-product-status/{orderId}/{productId}/{status}")]
+    public async Task<IActionResult> UpdateProductStatus(string orderId, string productId, ProductDeliveryStatus status)
     {
+      try
+      {
         // Validate token
         var token = Request.Headers["Authorization"];
         if (token.Count == 0)
         {
-            return Unauthorized("Token is required.");
+          return Unauthorized("Token is required.");
         }
 
         var user = JWTService.ValidateToken(token, _jwtSettings.SecurityKey);
         if (user == null)
         {
-            return Unauthorized("Invalid token.");
+          return Unauthorized("Invalid token.");
         }
 
         // Validate necessary fields
         if (string.IsNullOrEmpty(orderId) || string.IsNullOrEmpty(productId))
         {
-            return BadRequest("Order ID and Product ID are required.");
+          return BadRequest("Order ID and Product ID are required.");
         }
 
         // Retrieve order details
         var order = await _mongoDBService.GetOrderByOrderIdAsync(orderId);
         if (order == null || order.OrderId != orderId)
         {
-            return NotFound("Order not found or order ID does not match.");
+          return NotFound("Order not found or order ID does not match.");
         }
 
         // Check if the order is already delivered or cancelled
         if (order.Status == OrderStatus.Delivered || order.Status == OrderStatus.Cancelled)
         {
-            return BadRequest("Order is already delivered or cancelled.");
+          return BadRequest("Order is already delivered or cancelled.");
         }
 
         // Ensure the product exists in the order
         if (!order.Products.ContainsKey(productId))
         {
-            return NotFound($"Product with ID {productId} not found in the order.");
+          return NotFound($"Product with ID {productId} not found in the order.");
         }
 
         // Call the service function to update the product's delivery status
         var productUpdateSuccess = await _mongoDBService.UpdateProductDeliveryStatusAsync(orderId, productId, status);
-        
+
         if (!productUpdateSuccess)
         {
-            return StatusCode(500, $"Failed to update delivery status for product {productId}");
+          return StatusCode(500, $"Failed to update delivery status for product {productId}");
         }
 
         // Update the order's statusUpdatedOn field
@@ -223,12 +229,12 @@ public async Task<IActionResult> UpdateProductStatus(string orderId, string prod
         await _mongoDBService.UpdateOrder(order);
 
         return Ok(new { message = "Product status updated successfully.", updatedProductStatus = status });
-    }
-    catch (Exception ex)
-    {
+      }
+      catch (Exception ex)
+      {
         return BadRequest(ex.Message);
+      }
     }
-}
 
 
 
@@ -693,11 +699,11 @@ public async Task<IActionResult> UpdateProductStatus(string orderId, string prod
           return BadRequest("Order already ready.");
         }
 
-        //Check if already dispatched
-        if (order.Status != server.Models.OrderStatus.Dispatched)
-        {
-          return BadRequest("Order not dispatched. Cannot update to ready.");
-        }
+        // //Check if already dispatched
+        // if (order.Status != server.Models.OrderStatus.Dispatched)
+        // {
+        //   return BadRequest("Order not dispatched. Cannot update to ready.");
+        // }
 
         //Check if request to cancel is true
         if (order.RequestToCancel == true)
